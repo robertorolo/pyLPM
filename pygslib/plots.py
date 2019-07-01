@@ -1,15 +1,15 @@
 import plotly.offline as pyo
-from plotly.graph_objs import *
-
+import plotly.graph_objs as go
 import numpy as np
 
 #############################################################################################################
 
 def weighted_avg_and_var(values, weights):
-    """
-    Return the weighted average and standard deviation.
-
-    values, weights -- Numpy ndarrays with the same shape.
+    """returns weighted average and mean.
+    
+    Arguments:
+        values {array} -- array of data values
+        weights {array} -- array of weights
     """
     average = numpy.average(values, weights=weights)
     # Fast and numerically precise:
@@ -19,6 +19,20 @@ def weighted_avg_and_var(values, weights):
 #############################################################################################################
 
 def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=False, figsize=(600,600)):
+    """plots pdf and cdf.
+    
+    Arguments:
+        data {array} -- data values array
+    
+    Keyword Arguments:
+        n_bins {int} -- number of bins (default: {20})
+        wt {array} -- array of weights (default: {None})
+        title {str} -- plot title (default: {''})
+        x_axis {str} -- x axis title (default: {''})
+        y_axis {str} -- y axis title (default: {''})
+        cdf {bool} -- cdf plot flag (default: {False})
+        figsize {tuple} -- figure size (default: {(600,600)})
+    """
 
     statistics = '''
     n = {}
@@ -58,6 +72,9 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
     if cdf == True:
 
         hist = np.cumsum(hist*np.diff(bin_edges))
+        hist = np.insert(hist, 0, 0)
+        bin_edges = np.insert(bin_edges, 0, 0)
+        print(bin_edges, hist)
 
         trace = {
             'type':'scatter',
@@ -77,11 +94,11 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
         'height':figsize[1],
     }
 
-    fig = Figure(traces, layout)
+    fig = go.Figure(traces, layout)
 
     return pyo.iplot(fig)
 
-def scatter(x, y, z=None, variable=None, title='', x_axis='', y_axis=''):
+'''def scatter(x, y, z=None, variable=None, title='', x_axis='', y_axis=''):
 
     if z == None:
 
@@ -92,6 +109,6 @@ def scatter(x, y, z=None, variable=None, title='', x_axis='', y_axis=''):
         trace = {
             'type':'scatter',
             'mode':'markers'
-        }
+        }'''
 
     
