@@ -257,6 +257,12 @@ def cell_declus_sum(cell_size, mean, title='Cell declus summary', pointsize=8, f
 
     return pyo.iplot(fig)
 
+def pixelplot(grid_dic, variable, categorical=False, title='', x_axis='Easting (m)', y_axis='Northing (m)', colorscale='Jet', colorbartitle='', figsize=(700,700)):
+
+    traces = []
+
+    
+
 
 
 
