@@ -1,6 +1,7 @@
 import plotly.offline as pyo
 import plotly.graph_objs as go
 import numpy as np
+from scipy.stats import gaussian_kde
 
 #############################################################################################################
 
@@ -16,9 +17,23 @@ def weighted_avg_and_var(values, weights):
     variance = np.average((values-average)**2, weights=weights)
     return average, variance
 
+def isotopic_arrays(arrays):
+    masks = []
+    for array in arrays:
+        masks.append(np.isnan(array))
+    mask = sum(masks)
+    masked_arrays = []
+    for array in arrays:
+        masked_var = np.ma.array(array, mask=mask).compressed()
+        masked_arrays.append(masked_var)
+    
+    return masked_arrays
+
 #############################################################################################################
 
 def locmap(x, y, variable, categorical=False, title='', x_axis='Easting (m)', y_axis='Northing (m)', pointsize=8, colorscale='Jet', colorbartitle='', figsize=(700,700)):
+
+    variable = np.where(variable == -999.0, float('nan'), variable)
 
     traces = []
     
@@ -44,15 +59,13 @@ def locmap(x, y, variable, categorical=False, title='', x_axis='Easting (m)', y_
 
     else:
 
-        mask = np.isnan(variable)
-
         trace = {
             'type':'scatter',
             'mode':'markers',
-            'x':x[~mask],
-            'y':y[~mask],
+            'x':x,
+            'y':y,
             'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':True,'colorbar':{'title':colorbartitle}},
-            'text':variable[~mask]
+            'text':variable
         }
 
         traces.append(trace)
@@ -85,6 +98,7 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
         figsize {tuple} -- figure size (default: {(600,600)})
     """
 
+    dataf = np.where(data == -999.0, float('nan'), data)
     dataf = data[~np.isnan(data)]
 
     statistics = '''
@@ -93,7 +107,7 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
     max {} <br />
     mean {}  <br />
     stdev {}  <br />
-    cv {}  <br />
+    cv {}  
     '''.format(round(len(dataf),0), round(dataf.min(),2), round(dataf.max(),2),  round(dataf.mean(),2), round(np.sqrt(dataf.var()),2), round(np.sqrt(dataf.var())/dataf.mean(),2))
 
     if wt != None:
@@ -151,8 +165,25 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
 
     return pyo.iplot(fig)
 
-def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line = True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Jet', colorbartitle='', figsize=(700,700)):
+def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line = True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Viridis', colorbartitle='', figsize=(700,700)):
 
+    x = np.where(x == -999.0, float('nan'), x)
+    y = np.where(y == -999.0, float('nan'), y)
+
+    x, y = isotopic_arrays([x,y])[0], isotopic_arrays([x,y])[1]
+
+    statistics = '''
+    n {}  <br />
+    rho {}
+    '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2))
+    
+    if variable != 'kernel density':
+        variable = np.where(variable == -999.0, float('nan'), variable)
+
+    else:
+        xy = np.vstack([x,y])
+        variable = gaussian_kde(xy)(xy)
+    
     traces = []
     
     trace = {
@@ -160,18 +191,36 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line =
         'mode':'markers',
         'x':x,
         'y':y,
-        'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':True,'colorbar':{'title':colorbartitle}},
-        'text':variable
+        'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':False,'colorbar':{'title':colorbartitle}},
+        'text':variable,
+        'name':'Scatter'
     }
 
     traces.append(trace)
 
+    if xy_line == True:
+
+        maxxy = [max(x), max(y)]
+
+        trace = {
+            'type':'scatter',
+            'mode':'lines',
+            'x':[0,max(maxxy)],
+            'y':[0,max(maxxy)],
+            'name':'x=y line',
+            'line':{'dash':'dot','color':'grey'}
+
+        }
+
+        traces.append(trace)
+
     layout = {
         'title':title,
-        'xaxis':{'title':x_axis,'scaleanchor':'y','zeroline':True},
-        'yaxis':{'title':y_axis,'zeroline':True},
+        'xaxis':{'title':x_axis,'zeroline':True,'autorange':True},
+        'yaxis':{'title':y_axis,'zeroline':True,'autorange':True},
         'width':figsize[0],
         'height':figsize[1],
+        'annotations':[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
     }
 
     fig = go.Figure(traces, layout)
