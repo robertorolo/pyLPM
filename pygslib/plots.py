@@ -11,14 +11,14 @@ def weighted_avg_and_var(values, weights):
         values {array} -- array of data values
         weights {array} -- array of weights
     """
-    average = numpy.average(values, weights=weights)
+    average = np.average(values, weights=weights)
     # Fast and numerically precise:
-    variance = numpy.average((values-average)**2, weights=weights)
+    variance = np.average((values-average)**2, weights=weights)
     return average, variance
 
 #############################################################################################################
 
-def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=False, figsize=(600,600)):
+def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=False, figsize=(700,700)):
     """plots pdf and cdf.
     
     Arguments:
@@ -34,31 +34,36 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
         figsize {tuple} -- figure size (default: {(600,600)})
     """
 
+    dataf = data[~np.isnan(data)]
+
     statistics = '''
-    n = {}
-    mean = {}
-    variance = {}
-    standard deviation = {}
-    cv = {}
+    n {}  <br />
+    min {} <br />
+    max {} <br />
+    mean {}  <br />
+    stdev {}  <br />
+    cv {}  <br />
     not weighted
-    '''.format(len(data), data.mean(), data.var(), np.sqrt(data.var()), np.sqrt(data.var())/data.mean())
+    '''.format(round(len(dataf),0), round(dataf.min(),2), round(dataf.max(),2),  round(dataf.mean(),2), round(np.sqrt(dataf.var()),2), round(np.sqrt(dataf.var())/dataf.mean(),2))
 
     if wt != None:
 
-        mean, var = weighted_avg_and_var(data, wt)
+        mean, var = weighted_avg_and_var(dataf, wt)
 
         statistics = '''
-        n = {}
-        mean = {}
-        variance = {}
-        standard deviation = {}
-        cv = {}
+        n {}  <br />
+        min {} <br />
+        max {} <br />
+        mean {}  <br />
+        stdev {}  <br />
+        cv {}  <br />
         weighted
-        '''.format(len(data), mean, variance, np.sqrt(variance), np.sqrt(variance)/mean)
+        '''.format(round(len(dataf),0),  round(dataf.min(),2), round(dataf.max(),2), round(dataf.mean,2), round(np.sqrt(var),2), round(np.sqrt(var)/mean),2)
 
     traces = []
 
-    hist, bin_edges = np.histogram(data, bins=n_bins, weights=wt, density=True)
+    hist, bin_edges = np.histogram(dataf, bins=n_bins, weights=wt, density=True)
+    hist = hist*np.diff(bin_edges)
     
     trace = {
         'type':'bar',
@@ -71,14 +76,10 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
 
     if cdf == True:
 
-        hist = np.cumsum(hist*np.diff(bin_edges))
-        hist = np.insert(hist, 0, 0)
-        bin_edges = np.insert(bin_edges, 0, 0)
-        print(bin_edges, hist)
+        hist = np.cumsum(hist)
 
         trace = {
-            'type':'scatter',
-            'mode':'lines',
+            'type':'bar',
             'x':bin_edges,
             'y':hist,
             'name':'cdf'
@@ -92,6 +93,8 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
         'yaxis':{'title':y_axis},
         'width':figsize[0],
         'height':figsize[1],
+        'barmode':'group',
+        'annotations':[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}]
     }
 
     fig = go.Figure(traces, layout)
