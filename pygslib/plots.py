@@ -110,7 +110,7 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
     cv {}  
     '''.format(round(len(dataf),0), round(dataf.min(),2), round(dataf.max(),2),  round(dataf.mean(),2), round(np.sqrt(dataf.var()),2), round(np.sqrt(dataf.var())/dataf.mean(),2))
 
-    if wt != None:
+    if wt is not None:
 
         mean, var = weighted_avg_and_var(dataf, wt)
 
@@ -122,7 +122,7 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
         stdev {}  <br />
         cv {}  <br />
         weighted
-        '''.format(round(len(dataf),0),  round(dataf.min(),2), round(dataf.max(),2), round(dataf.mean,2), round(np.sqrt(var),2), round(np.sqrt(var)/mean),2)
+        '''.format(round(len(dataf),0),  round(dataf.min(),2), round(dataf.max(),2), round(mean,2), round(np.sqrt(var),2), round(np.sqrt(var)/mean),2)
 
     traces = []
 
@@ -226,6 +226,37 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line =
     fig = go.Figure(traces, layout)
 
     return pyo.iplot(fig)
+
+def cell_declus_sum(cell_size, mean, title='Cell declus summary', pointsize=8, figsize=(600,600)):
+
+    index = np.where(mean == min(mean))[0][0]
+
+    text_annotation = '''
+    cell size {} <br />
+    mean {}
+    '''.format(round(cell_size[index],2), round(min(mean),2))
+
+    trace = {
+    'type':'scatter',
+    'mode':'markers',
+    'x':cell_size,
+    'y':mean,
+    'marker':{'size':pointsize},
+    }
+
+    layout = {
+    'title':title,
+    'xaxis':{'title':'cell size','zeroline':True,'autorange':True},
+    'yaxis':{'title':'mean','zeroline':True,'autorange':True},
+    'width':figsize[0],
+    'height':figsize[1],
+    'annotations':[{'text':text_annotation,'showarrow':True,'arrowhead':7,'ax':0,'ay':-0.5*min(mean),'x':cell_size[index],'y':min(mean),'xref':'x','yref':'y','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
+    }
+
+    fig = go.Figure([trace], layout)
+
+    return pyo.iplot(fig)
+
 
 
 

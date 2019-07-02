@@ -1,6 +1,7 @@
 import subprocess
 import numpy as np
 import pandas as pd
+from pygslib import plots
 
 #############################################################################################################
 
@@ -112,7 +113,8 @@ START OF PARAMETERS:
     program = "pygslib/gslib/CellDeclus.exe"
 
     call_program(program, parfile, usewine)
-   
 
-
-
+    df1 = read_GeoEAS('pygslib/gslib/tmp/tmpsum.dat')
+    plots.cell_declus_sum(df1['Cell Size'],df1['Declustered Mean'])
+    df2 = read_GeoEAS('pygslib/gslib/tmp/tmpfile.dat')
+    df['Cell Declustering Weight'] = df2['Cell Declustering Weight']
