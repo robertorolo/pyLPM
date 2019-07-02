@@ -1,5 +1,8 @@
 import subprocess
 import numpy as np
+import pandas as pd
+
+#############################################################################################################
 
 def call_program(program, parfile, usewine=False):
     if usewine == True:
@@ -39,21 +42,27 @@ def write_GeoEAS(df,x,y,z,vars=[]):
     f.write(data)
     f.close()
 
-def read_GeoEAS(file, cols='all'):
+def read_GeoEAS(file):
     f = open(file, 'r')
     col_names = []
+    results = []
+    
     for index, line in enumerate(f):
     	if index == 0:
     		continue
     	elif index == 1:
     		n_cols = int(line)
-    	elif index <= n_cols:
-    		col_names.append(line)
+    	elif index <= n_cols+1:
+    		col_names.append(line[:-1])
+    	else:
+    		values = [float(i) for i in line.split()]
+    		results.append(values)
 
-    print(col_names)
+    f.close()
 
+    return pd.DataFrame(results, columns = col_names)
 
-
+#############################################################################################################
 
 def celldeclus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, summary_file='pygslib/gslib/tmp/tmpsum.dat', output_file='pygslib/gslib/tmp/tmpfile.dat', x_anis=1, y_anis=1, n_cell=10, min_size=1, max_size=20, keep_min = True, specific_size=0, usewine=False):
 

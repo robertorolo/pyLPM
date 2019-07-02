@@ -177,7 +177,7 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line =
     rho {}
     '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2))
     
-    if variable != 'kernel density':
+    if type(variable) is not str:
         variable = np.where(variable == -999.0, float('nan'), variable)
 
     else:
