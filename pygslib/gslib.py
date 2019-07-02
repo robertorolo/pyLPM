@@ -1,6 +1,15 @@
 import subprocess
 import numpy as np
 
+def call_program(program, parfile, usewine=False):
+    if usewine == True:
+        p = subprocess.Popen(['wine', program, parfile], stdout=subprocess.PIPE)
+    else:
+         p = subprocess.Popen([program, parfile], stdout=subprocess.PIPE)
+
+    for line in p.stdout:    
+        print(line.decode('utf-8'), end='')
+
 def write_GeoEAS(df,x,y,z,vars=[]):
     """wirite a GeoEAS file from a DataFrame
     
@@ -46,7 +55,7 @@ def read_GeoEAS(file, cols='all'):
 
 
 
-def celldeclus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, summary_file='tmp/tmpsum.dat', output_file='tmp/tmpfile.dat', x_anis=1, y_anis=1, n_cell=10, min_size=1, max_size=20, keep_min = True, specific_size=0):
+def celldeclus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, summary_file='pygslib/gslib/tmp/tmpsum.dat', output_file='pygslib/gslib/tmp/tmpfile.dat', x_anis=1, y_anis=1, n_cell=10, min_size=1, max_size=20, keep_min = True, specific_size=0, usewine=False):
 
     write_GeoEAS(df=df,x=x,y=y,z=z,vars=[var])
     
@@ -68,11 +77,11 @@ START OF PARAMETERS:
     '''
 
     map_dict = {
-        'datafile':'tmp/tmp.dat',
+        'datafile':'pygslib/gslib/tmp/tmp.dat',
         'x':'1',
         'y':'2',
         'z':0 if z == None else '3',
-        'var':'4',
+        'var':'3' if z == None else '4',
         'tmin':str(tmin),
         'tmax':str(tmax),
         'sum':summary_file,
@@ -88,16 +97,13 @@ START OF PARAMETERS:
 
     formatted_str = celldecluspar.format(**map_dict)
     parfile = 'pygslib/gslib/tmp/partmp.par'
-    
     f = open(parfile, 'w')
     f.write(formatted_str)
     f.close()
-
     program = "pygslib/gslib/CellDeclus.exe"
-    p = subprocess.Popen([program, parfile], stdout=subprocess.PIPE)
 
-    for line in p.stdout:    
-        print(line.decode('utf-8'), end='')
+    call_program(program, parfile, usewine)
+   
 
 
 
