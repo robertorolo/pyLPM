@@ -18,6 +18,57 @@ def weighted_avg_and_var(values, weights):
 
 #############################################################################################################
 
+def locmap(x, y, variable, categorical=False, title='', x_axis='Easting (m)', y_axis='Northing (m)', pointsize=8, colorscale='Jet', colorbartitle='', figsize=(700,700)):
+
+    traces = []
+    
+    if categorical == True:
+
+        cats  = np.unique(variable[~np.isnan(variable)])
+
+        for cat in cats:
+
+            mask = variable == cat
+           
+            trace = {
+            'type':'scatter',
+            'mode':'markers',
+            'x':x[mask],
+            'y':y[mask],
+            'marker':{'size':pointsize},
+            'text':variable[mask],
+            'name':str(int(cat)),
+            }
+
+            traces.append(trace)
+
+    else:
+
+        mask = np.isnan(variable)
+
+        trace = {
+            'type':'scatter',
+            'mode':'markers',
+            'x':x[~mask],
+            'y':y[~mask],
+            'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':True,'colorbar':{'title':colorbartitle}},
+            'text':variable[~mask]
+        }
+
+        traces.append(trace)
+
+    layout = {
+        'title':title,
+        'xaxis':{'title':x_axis,'scaleanchor':'y','zeroline':False},
+        'yaxis':{'title':y_axis,'zeroline':False},
+        'width':figsize[0],
+        'height':figsize[1],
+    }
+
+    fig = go.Figure(traces, layout)
+
+    return pyo.iplot(fig)
+
 def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=False, figsize=(700,700)):
     """plots pdf and cdf.
     
@@ -43,7 +94,6 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
     mean {}  <br />
     stdev {}  <br />
     cv {}  <br />
-    not weighted
     '''.format(round(len(dataf),0), round(dataf.min(),2), round(dataf.max(),2),  round(dataf.mean(),2), round(np.sqrt(dataf.var()),2), round(np.sqrt(dataf.var())/dataf.mean(),2))
 
     if wt != None:
@@ -101,17 +151,33 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
 
     return pyo.iplot(fig)
 
-'''def scatter(x, y, z=None, variable=None, title='', x_axis='', y_axis=''):
+def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line = True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Jet', colorbartitle='', figsize=(700,700)):
 
-    if z == None:
+    traces = []
+    
+    trace = {
+        'type':'scatter',
+        'mode':'markers',
+        'x':x,
+        'y':y,
+        'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':True,'colorbar':{'title':colorbartitle}},
+        'text':variable
+    }
 
-        trace = 
+    traces.append(trace)
 
-    else:
+    layout = {
+        'title':title,
+        'xaxis':{'title':x_axis,'scaleanchor':'y','zeroline':True},
+        'yaxis':{'title':y_axis,'zeroline':True},
+        'width':figsize[0],
+        'height':figsize[1],
+    }
 
-        trace = {
-            'type':'scatter',
-            'mode':'markers'
-        }'''
+    fig = go.Figure(traces, layout)
+
+    return pyo.iplot(fig)
+
+
 
     
