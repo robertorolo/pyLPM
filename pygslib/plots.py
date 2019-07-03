@@ -257,9 +257,50 @@ def cell_declus_sum(cell_size, mean, title='Cell declus summary', pointsize=8, f
 
     return pyo.iplot(fig)
 
-def pixelplot(grid_dic, variable, categorical=False, title='', x_axis='Easting (m)', y_axis='Northing (m)', colorscale='Jet', colorbartitle='', figsize=(700,700)):
+def pixelplot(grid_dic, variable, categorical=False, points=None, gap=1, title='', x_axis='Easting (m)', y_axis='Northing (m)', colorscale='Jet', colorbartitle='', figsize=(700,700)):
 
     traces = []
+
+    x = [(grid_dic['ox']+i*grid_dic['sx']) for i in range(grid_dic['nx'])]
+    y = [(grid_dic['oy']+j*grid_dic['sy']) for j in range(grid_dic['ny'])]
+
+    print(x)
+    print(y)
+
+    trace = {
+    'type':'heatmap',
+    'z':variable.reshape(grid_dic['nx'], grid_dic['ny']),
+    'x':x,
+    'y':y,
+    'colorscale':colorscale,
+    'xgap':gap,
+    'ygap':gap
+    }
+
+    traces.append(trace)
+
+    if points is not None:
+        trace = {
+            'type':'scatter',
+            'mode':'markers',
+            'x':points[0],
+            'y':points[1],
+            'marker':{'colorscale':colorscale,'size':6,'color':points[2],'line':{'color':'black','width':1}},
+            'text':variable}
+
+    traces.append(trace)
+    
+    layout = {
+        'title':title,
+        'xaxis':{'title':x_axis,'zeroline':False,'scaleanchor':'y'},
+        'yaxis':{'title':y_axis,'zeroline':False},
+        'width':figsize[0],
+        'height':figsize[1],
+    }
+
+    fig = go.Figure(traces, layout)
+
+    return pyo.iplot(fig)
 
     
 
