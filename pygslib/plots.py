@@ -288,7 +288,7 @@ def pixelplot(grid_dic, variable, categorical=False, points=None, gap=1, title='
             'marker':{'colorscale':colorscale,'size':6,'color':points[2],'line':{'color':'black','width':1}},
             'text':variable}
 
-    traces.append(trace)
+        traces.append(trace)
     
     layout = {
         'title':title,
