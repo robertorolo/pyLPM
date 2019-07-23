@@ -1,3 +1,3 @@
-import pygslib.gslib 
-import pygslib.plots
-import pygslib.utils
+import pyLPM.gslib 
+import pyLPM.plots
+import pyLPM.utils
