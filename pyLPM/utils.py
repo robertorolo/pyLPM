@@ -7,12 +7,12 @@ def autogrid(x, y, z, sx, sy, sz, buffer=0):
 		oz = 0
 		max_z = 0
 	else:
-		oz = min(z) - buffer + sz/2
+		oz = min(z) - buffer #+ sz/2
 		max_z = max(z) + buffer
 		nz = math.ceil((max_z - oz)/sz)
 
-	ox = min(x) - buffer + sx/2
-	oy = min(y) - buffer + sy/2
+	ox = min(x) - buffer #+ sx/2
+	oy = min(y) - buffer #+ sy/2
 	max_x = max(x) + buffer
 	max_y = max(y) + buffer
 	nx = math.ceil((max_x - ox)/(sx))
