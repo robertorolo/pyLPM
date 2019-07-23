@@ -337,8 +337,8 @@ def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, 
 
     traces = []
 
-    maxxy = [max(x), max(y)]
-    minxy = [min(x), min(y)]
+    maxxy = [max(x_quant), max(y_quant)]
+    minxy = [min(x_quant), min(y_quant)]
     trace = {
     'type':'scatter',
     'mode':'lines',
@@ -363,8 +363,8 @@ def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, 
 
     layout = {
     'title':title,
-    'xaxis':{'title':x_axis,'zeroline':True,'autorange':True},
-    'yaxis':{'title':y_axis,'zeroline':True,'autorange':True},
+    'xaxis':{'title':x_axis,'zeroline':True,'autorange':False,'range':[min(minxy),max(maxxy)]},
+    'yaxis':{'title':y_axis,'zeroline':True,'autorange':False,'range':[min(minxy),max(maxxy)]},
     'width':figsize[0],
     'height':figsize[1],
     #'annotations':[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
