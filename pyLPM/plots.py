@@ -2,6 +2,7 @@ import plotly.offline as pyo
 import plotly.graph_objs as go
 import numpy as np
 from scipy.stats import gaussian_kde
+from scipy import stats
 
 #############################################################################################################
 
@@ -165,7 +166,7 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
 
     return pyo.iplot(fig)
 
-def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line = True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Viridis', colorbartitle='', figsize=(700,700)):
+def scatter2d(x, y, variable='kernel density', xy_line = True, best_fit_line=True, regression_line = True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Viridis', colorbartitle='', figsize=(700,700)):
 
     x = np.where(x == -999.0, float('nan'), x)
     y = np.where(y == -999.0, float('nan'), y)
@@ -176,6 +177,15 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line =
     n {}  <br />
     rho {}
     '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2))
+
+    if best_fit_line == True:
+        slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+
+        statistics = '''
+        n {}  <br />
+        rho {} <br />
+        slope {}
+        '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2), round(slope,2))
     
     if type(variable) is not str:
         variable = np.where(variable == -999.0, float('nan'), variable)
@@ -208,6 +218,24 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, regression_line =
             'x':[0,max(maxxy)],
             'y':[0,max(maxxy)],
             'name':'x=y line',
+            'line':{'dash':'dot','color':'red'}
+
+        }
+
+        traces.append(trace)
+
+    if best_fit_line == True:
+
+        maxxy = [max(x), max(y)]
+        minxy = [min(x), min(y)]
+        vals = np.arange(min(minxy),max(maxxy))
+
+        trace = {
+            'type':'scatter',
+            'mode':'lines',
+            'x':vals,
+            'y':slope*vals+intercept,
+            'name':'best fit line',
             'line':{'dash':'dot','color':'grey'}
 
         }

@@ -150,7 +150,7 @@ START OF PARAMETERS:
     df2 = read_GeoEAS(output_file)
     df['Declustering Weight'] = df2['Declustering Weight']
 
-def kt3d(df, x, y, z, var):
+def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oct, search_radius, search_ang = [0,0,0], discretization = [5,5,1], krig_type='OK', sk_mean = 0, tmin=-1.0e21, tmax=1.0e21, option='grid', debug_level=0, debug_file='pyLPM/gslib90/tmp/debug.out', output_file='pyLPM/gslib90/tmp/output.out'):
 
     write_GeoEAS(df=df,dh=None,x=x,y=y,z=z,vars=[var])
 
@@ -192,6 +192,33 @@ extdrift.dat                     -gridded file with drift/mean
         'var':col_number('pyLPM/gslib90/tmp/tmp.dat', var),
         'tmin':str(tmin),
         'tmax':str(tmax),
-        'option' 0 if option is 'grid' elif 1 if option is 'cross' elif 2 if option is 'jackknife'
+        'option': 0 if option is 'grid' else 1 if option is 'cross' else 2,
+        'debug':debug_level,
+        'debugout':debug_file,
+        'kt3dout':output_file,
+        'nx':grid['nx'],
+        'ny':grid['ny'],
+        'nz':grid['nz'],
+        'ox':grid['ox'],
+        'oy':grid['oy'],
+        'oz':grid['oz'],
+        'sx':grid['sx'],
+        'sy':grid['sy'],
+        'sz':grid['sz'],
+        'dx':discretization[0],
+        'dy':discretization[1],
+        'dz':discretization[2],
+        'min':min_samples,
+        'max':max_samples,
+        'max_oct':max_oct,
+        'r1':search_radius[0],
+        'r2':search_radius[1],
+        'r3':search_radius[2],
+        'a1':search_ang[0],
+        'a2':search_ang[1],
+        'a3':search_ang[3],
+        'krig_type':0 if krig_type is 'SK' else 0,
+        'mean':sk_mean,
+        'varg':write_varg_str(variogram)
     }
 
