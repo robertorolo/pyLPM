@@ -327,6 +327,56 @@ def pixelplot(grid_dic, variable, categorical=False, points=None, gap=0, title='
 
     return pyo.iplot(fig)
 
+def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, figsize=(700,700)):
+    
+    x = np.where(x == -999.0, float('nan'), x)
+    y = np.where(y == -999.0, float('nan'), y)
+
+    x_quant = [np.nanquantile(np.array(x), q) for q in np.linspace(0,1,dicretization)]
+    y_quant = [np.nanquantile(np.array(y), q) for q in np.linspace(0,1,dicretization)]
+
+    traces = []
+
+    maxxy = [max(x), max(y)]
+    minxy = [min(x), min(y)]
+    trace = {
+    'type':'scatter',
+    'mode':'lines',
+    'x':[min(minxy),max(maxxy)],
+    'y':[min(minxy),max(maxxy)],
+    'name':'reference',
+    'line':{'dash':'dot','color':'grey'}
+    }
+
+    traces.append(trace)
+
+    trace = {
+    'type':'scatter',
+    'mode':'lines',
+    'x':x_quant,
+    'y':y_quant,
+    'name':'qq',
+    #'line':{'dash':'dot','color':'grey'}
+    }
+
+    traces.append(trace)
+
+    layout = {
+    'title':title,
+    'xaxis':{'title':x_axis,'zeroline':True,'autorange':True},
+    'yaxis':{'title':y_axis,'zeroline':True,'autorange':True},
+    'width':figsize[0],
+    'height':figsize[1],
+    #'annotations':[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
+    }
+
+    fig = go.Figure(traces, layout)
+
+    return pyo.iplot(fig)
+
+
+
+
     
 
 
