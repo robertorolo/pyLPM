@@ -1,5 +1,7 @@
 import plotly.offline as pyo
 import plotly.graph_objs as go
+#from _plotly_future_ import v4_subplots
+from plotly.subplots import make_subplots
 import numpy as np
 from scipy.stats import gaussian_kde
 from scipy import stats
@@ -294,7 +296,7 @@ def pixelplot(grid_dic, variable, categorical=False, points=None, gap=0, title='
 
     trace = {
     'type':'heatmap',
-    'z':variable.reshape(grid_dic['ny'], grid_dic['nx']),
+    'z':variable.values.reshape(grid_dic['ny'], grid_dic['nx']),
     'x':x,
     'y':y,
     'colorscale':colorscale,
@@ -371,6 +373,70 @@ def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, 
     }
 
     fig = go.Figure(traces, layout)
+
+    return pyo.iplot(fig)
+
+def xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figsize=(500,900)):
+
+    from _plotly_future_ import v4_subplots
+
+    fig = make_subplots(rows=1, cols=2)
+
+    real = np.where(x == -999.0, float('nan'), x)
+    estimate = np.where(y == -999.0, float('nan'), y)
+
+    real, estimate = isotopic_arrays([x,y])[0], isotopic_arrays([x,y])[1]
+
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+
+    statistics = '''
+    n {}  <br />
+    rho {} <br />
+    slope {}
+    '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2), round(slope,2))
+    
+    fig.add_trace({
+        'type':'scatter',
+        'mode':'markers',
+        'x':x,
+        'y':y,
+        'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':False,'colorbar':{'title':colorbartitle}},
+        'text':variable,
+        'name':'Scatter'
+    },row=1,col=1)
+
+    maxxy = [max(x), max(y)]
+
+    fig.add_trace({
+        'type':'scatter',
+        'mode':'lines',
+        'x':[0,max(maxxy)],
+        'y':[0,max(maxxy)],
+        'name':'x=y line',
+        'line':{'dash':'dot','color':'red'}},row=1,col=1)
+
+    maxxy = [max(x), max(y)]
+    minxy = [min(x), min(y)]
+    vals = np.arange(min(minxy),max(maxxy))
+
+    fig.add_trace({
+        'type':'scatter',
+        'mode':'lines',
+        'x':vals,
+        'y':slope*vals+intercept,
+        'name':'best fit line',
+        'line':{'dash':'dot','color':'grey'}
+    }, row=1, col=1)
+
+
+    layout = {
+        'title':title,
+        'xaxis':{'title':x_axis,'zeroline':True,'autorange':True},
+        'yaxis':{'title':y_axis,'zeroline':True,'autorange':True},
+        'width':figsize[0],
+        'height':figsize[1],
+        'annotations':[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
+    }
 
     return pyo.iplot(fig)
 

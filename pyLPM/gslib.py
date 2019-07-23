@@ -45,7 +45,7 @@ def read_GeoEAS(file):
     	if index == 0:
     		continue
     	elif index == 1:
-    		n_cols = int(line)
+    		n_cols = int(line.split()[0])
     	elif index <= n_cols+1:
     		col_names.append(line[:-1])
     	else:
@@ -89,7 +89,7 @@ def write_varg_str(varg):
             elif struct is 'gaussian':
                 it = 3
 
-            new_lines = '{} {} {} {} \n {} {} {}'.format(it, varg[struct]['cc'], varg[struct]['a1'], varg[struct]['a2'], varg[struct]['a3'], varg[struct]['r1'], varg[struct]['r2'], varg[struct]['r3'])
+            new_lines = '{} {} {} {} {} \n {} {} {}'.format(it, varg[struct]['cc'], varg[struct]['a1'], varg[struct]['a2'], varg[struct]['a3'], varg[struct]['r1'], varg[struct]['r2'], varg[struct]['r3'])
 
             var_str = var_str + new_lines
         
@@ -150,9 +150,9 @@ START OF PARAMETERS:
     df2 = read_GeoEAS(output_file)
     df['Declustering Weight'] = df2['Declustering Weight']
 
-def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oct, search_radius, search_ang = [0,0,0], discretization = [5,5,1], krig_type='OK', sk_mean = 0, tmin=-1.0e21, tmax=1.0e21, option='grid', debug_level=0, debug_file='pyLPM/gslib90/tmp/debug.out', output_file='pyLPM/gslib90/tmp/output.out'):
+def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oct, search_radius, search_ang = [0,0,0], discretization = [5,5,1], krig_type='OK', sk_mean = 0, tmin=-1.0e21, tmax=1.0e21, option='grid', debug_level=0, debug_file='pyLPM/gslib90/tmp/debug.out', output_file='pyLPM/gslib90/tmp/output.out',usewine=False):
 
-    write_GeoEAS(df=df,dh=None,x=x,y=y,z=z,vars=[var])
+    write_GeoEAS(df=df,dh=dh,x=x,y=y,z=z,vars=[var])
 
     kt3dpar = '''
                       Parameters for KT3D
@@ -170,7 +170,7 @@ START OF PARAMETERS:
 {kt3dout}                         -file for kriged output
 {nx}   {ox}    {sx}                  -nx,xmn,xsiz
 {ny}   {oy}    {sy}                  -ny,ymn,ysiz
-{nx}    {oz}    {sz}                  -nz,zmn,zsiz
+{nz}    {oz}    {sz}                  -nz,zmn,zsiz
 {dx}    {dy}      {dz}                    -x,y and z block discretization
 {min}    {max}                           -min, max data for kriging
 {max_oct}                                -max per octant (0-> not used)
@@ -216,9 +216,31 @@ extdrift.dat                     -gridded file with drift/mean
         'r3':search_radius[2],
         'a1':search_ang[0],
         'a2':search_ang[1],
-        'a3':search_ang[3],
+        'a3':search_ang[2],
         'krig_type':0 if krig_type is 'SK' else 0,
         'mean':sk_mean,
         'varg':write_varg_str(variogram)
     }
+
+    formatted_str = kt3dpar.format(**map_dict)
+    parfile = 'pyLPM/gslib90/tmp/partmp.par'
+    f = open(parfile, 'w')
+    f.write(formatted_str)
+    f.close()
+    program = "pyLPM/gslib90/kt3d.exe"
+
+    call_program(program, parfile, usewine)
+
+    if option is 'grid':
+
+        df1 = read_GeoEAS(output_file)
+        return df1['Estimate'], df1['EstimationVariance']
+
+    if option is 'cross' or option is 'jackknife':
+
+        df1 = read_GeoEAS(output_file)
+        print(df1.head())
+        real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
+        plots.xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figsize=(500,900))
+
 
