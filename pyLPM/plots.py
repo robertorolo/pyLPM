@@ -31,6 +31,24 @@ def isotopic_arrays(arrays):
 #############################################################################################################
 
 def locmap(x, y, variable, categorical=False, title='', x_axis='Easting (m)', y_axis='Northing (m)', pointsize=8, colorscale='Jet', colorbartitle='', figsize=(700,700)):
+    """Plots a location map for samples
+    
+    Args:
+        x (array): x values array
+        y (array): y values array
+        variable (array): variables values array
+        categorical (bool, optional): Categorical variable flag. Defaults to False.
+        title (str, optional): Plot title. Defaults to ''.
+        x_axis (str, optional): x axis title. Defaults to 'Easting (m)'.
+        y_axis (str, optional): y axis title. Defaults to 'Northing (m)'.
+        pointsize (int, optional): point size. Defaults to 8.
+        colorscale (str, optional): color scale. Defaults to 'Jet'.
+        colorbartitle (str, optional): colorbar title. Defaults to ''.
+        figsize (tuple, optional): figure size. Defaults to (700,700).
+    
+    Returns:
+        iplot: Location map
+    """
 
     variable = np.where(variable == -999.0, float('nan'), variable)
 
