@@ -6,7 +6,7 @@ START OF PARAMETERS:
 pyLPM/gslib90/tmp/tmp.dat              -file with data
 1  2  3  0  4  0                 -   columns for DH,X,Y,Z,var,sec var
 -1e+21   1e+21                 -   trimming limits
-1                                -option: 0=grid, 1=cross, 2=jackknife
+0                                -option: 0=grid, 1=cross, 2=jackknife
 pyLPM/gslib90/tmp/tmp.dat                          -file with jackknife data
 2   3   0    4    0              -   columns for X,Y,Z,vr and sec var
 0                                -debugging level: 0,1,2,3
