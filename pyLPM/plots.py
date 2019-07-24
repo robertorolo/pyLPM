@@ -460,7 +460,7 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
     points_df['x'], points_df['y'], points_df['z'], points_df['var'] = x, y, z, point_var
 
     grid_df = pd.DataFrame(columns=['x','y','z'], data=utils.add_coord(grid))
-    grid_df.sort_values(by=['z','y','x'], inplace=True)
+    #grid_df.sort_values(by=['z','y','x'], inplace=True)
     grid_df['var'] = grid_var
 
     x_linspace, y_linspace, z_linspace = np.linspace(min(grid_df['x']), max(grid_df['x']), n_bins), np.linspace(min(grid_df['y']), max(grid_df['y']), n_bins), np.linspace(min(grid_df['z']), max(grid_df['z']), n_bins)

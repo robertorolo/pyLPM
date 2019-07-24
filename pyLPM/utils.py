@@ -29,7 +29,7 @@ def add_coord(grid):
     z_coord = np.array([(grid['oz']+z*grid['sz']) for z in range(grid['nz'])])
 
     coords_array = []
-    for x,y,z in product(x_coord, y_coord, z_coord):
+    for z,y,x in product(z_coord, y_coord, x_coord):
         coords_array.append(np.array([x,y,z]))
 
     return np.array(coords_array)
