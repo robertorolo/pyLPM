@@ -5,8 +5,8 @@ import plotly
 import numpy as np
 from scipy.stats import gaussian_kde
 from scipy import stats
-from itertools import product
 import pandas as pd
+from pyLPM import utils 
 
 #############################################################################################################
 
@@ -27,17 +27,6 @@ def isotopic_arrays(arrays):
         masked_arrays.append(masked_var)
     
     return masked_arrays
-
-def add_coord(grid):
-    x_coord = np.array([(grid['ox']+x*grid['sx']) for x in range(grid['nx'])])
-    y_coord = np.array([(grid['oy']+y*grid['sy']) for y in range(grid['ny'])])
-    z_coord = np.array([(grid['oz']+z*grid['sz']) for z in range(grid['nz'])])
-
-    coords_array = []
-    for x,y,z in product(x_coord, y_coord, z_coord):
-        coords_array.append(np.array([x,y,z]))
-
-    return np.array(coords_array)
 
 #############################################################################################################
 
@@ -470,7 +459,8 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
     points_df = pd.DataFrame(columns=['x','y','z','var'])
     points_df['x'], points_df['y'], points_df['z'], points_df['var'] = x, y, z, point_var
 
-    grid_df = pd.DataFrame(columns=['x','y','z'], data=add_coord(grid))
+    grid_df = pd.DataFrame(columns=['x','y','z'], data=utils.add_coord(grid))
+    grid_df.sort_values(by=['z','y','x'], inplace=True)
     grid_df['var'] = grid_var
 
     x_linspace, y_linspace, z_linspace = np.linspace(min(grid_df['x']), max(grid_df['x']), n_bins), np.linspace(min(grid_df['y']), max(grid_df['y']), n_bins), np.linspace(min(grid_df['z']), max(grid_df['z']), n_bins)
@@ -524,7 +514,7 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
         'x':x_linspace,
         'y':x_grades_pts,
         'name':'points in x',
-        'line':{'dash':'solid','color':'red'}
+        'line':{'dash':'solid','color':'red'},
         }
 
         tracegrid = {
@@ -533,14 +523,15 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
         'x':x_linspace,
         'y':x_grades_grid,
         'name':'grid in x',
-        'line':{'dash':'solid','color':'blue'}
+        'line':{'dash':'solid','color':'blue'},
         }
 
         tracenpts = {
         'type':'bar',
         'x':x_linspace,
-        'y':x_n_pts,
-        'name':'number of points in x'
+        'y':np.array(x_n_pts)/max(x_n_pts)*max(x_grades_grid),
+        'name':'number of points in x',
+        'hovertext':x_n_pts
         }
 
         fig.append_trace(tracepts, 1, 1)
@@ -553,7 +544,7 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
         'x':y_linspace,
         'y':y_grades_pts,
         'name':'points in y',
-        'line':{'dash':'solid','color':'red'}
+        'line':{'dash':'solid','color':'red'},
         }
 
         tracegrid = {
@@ -562,14 +553,15 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
         'x':y_linspace,
         'y':y_grades_grid,
         'name':'grid in y',
-        'line':{'dash':'solid','color':'blue'}
+        'line':{'dash':'solid','color':'blue'},
         }
 
         tracenpts = {
         'type':'bar',
         'x':y_linspace,
-        'y':y_n_pts,
-        'name':'number of points in y'
+        'y':np.array(y_n_pts)/max(y_n_pts)*max(y_grades_grid),
+        'name':'number of points in y',
+        'hovertext':y_n_pts
         }
 
         fig.append_trace(tracepts, 2, 1)
