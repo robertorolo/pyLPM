@@ -5,16 +5,12 @@ import plotly
 import numpy as np
 from scipy.stats import gaussian_kde
 from scipy import stats
+from itertools import product
+import pandas as pd
 
 #############################################################################################################
 
 def weighted_avg_and_var(values, weights):
-    """returns weighted average and mean.
-    
-    Arguments:
-        values {array} -- array of data values
-        weights {array} -- array of weights
-    """
     average = np.average(values, weights=weights)
     # Fast and numerically precise:
     variance = np.average((values-average)**2, weights=weights)
@@ -31,6 +27,17 @@ def isotopic_arrays(arrays):
         masked_arrays.append(masked_var)
     
     return masked_arrays
+
+def add_coord(grid):
+    x_coord = np.array([(grid['ox']+x*grid['sx']) for x in range(grid['nx'])])
+    y_coord = np.array([(grid['oy']+y*grid['sy']) for y in range(grid['ny'])])
+    z_coord = np.array([(grid['oz']+z*grid['sz']) for z in range(grid['nz'])])
+
+    coords_array = []
+    for x,y,z in product(x_coord, y_coord, z_coord):
+        coords_array.append(np.array([x,y,z]))
+
+    return np.array(coords_array)
 
 #############################################################################################################
 
@@ -86,20 +93,6 @@ def locmap(x, y, variable, categorical=False, title='', x_axis='Easting (m)', y_
     return pyo.iplot(fig)
 
 def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=False, figsize=(700,700)):
-    """plots pdf and cdf.
-    
-    Arguments:
-        data {array} -- data values array
-    
-    Keyword Arguments:
-        n_bins {int} -- number of bins (default: {20})
-        wt {array} -- array of weights (default: {None})
-        title {str} -- plot title (default: {''})
-        x_axis {str} -- x axis title (default: {''})
-        y_axis {str} -- y axis title (default: {''})
-        cdf {bool} -- cdf plot flag (default: {False})
-        figsize {tuple} -- figure size (default: {(600,600)})
-    """
 
     dataf = np.where(data == -999.0, float('nan'), data)
     dataf = data[~np.isnan(data)]
@@ -289,6 +282,8 @@ def cell_declus_sum(cell_size, mean, title='Cell declus summary', pointsize=8, f
 
 def pixelplot(grid_dic, variable, categorical=False, points=None, gap=0, title='', x_axis='Easting (m)', y_axis='Northing (m)', colorscale='Jet', colorbartitle='', figsize=(700,700)):
 
+    variable = np.where(variable == -999, float('nan'), variable)
+    
     traces = []
 
     x = np.array([(grid_dic['ox']+i*grid_dic['sx']) for i in range(grid_dic['nx'])])
@@ -296,7 +291,7 @@ def pixelplot(grid_dic, variable, categorical=False, points=None, gap=0, title='
 
     trace = {
     'type':'heatmap',
-    'z':variable.values.reshape(grid_dic['ny'], grid_dic['nx']),
+    'z':variable.reshape(grid_dic['ny'], grid_dic['nx']),
     'x':x,
     'y':y,
     'colorscale':colorscale,
@@ -463,8 +458,139 @@ def xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figs
 
     return pyo.iplot(fig)
 
-def swath_plots():
-    pass
+def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
+
+    mask_pt = np.isfinite(point_var)
+    mask_grid = np.isfinite(grid_var)
+    if z is None:
+        z = np.zeros(len(x))
+    x, y, z = np.array(x)[mask_pt], np.array(y)[mask_pt], np.array(z)[mask_pt]
+    point_var, grid_var = np.array(point_var)[mask_pt], np.array(grid_var)[mask_grid]
+
+    points_df = pd.DataFrame(columns=['x','y','z','var'])
+    points_df['x'], points_df['y'], points_df['z'], points_df['var'] = x, y, z, point_var
+
+    grid_df = pd.DataFrame(columns=['x','y','z'], data=add_coord(grid))
+    grid_df['var'] = grid_var
+
+    x_linspace, y_linspace, z_linspace = np.linspace(min(grid_df['x']), max(grid_df['x']), n_bins), np.linspace(min(grid_df['y']), max(grid_df['y']), n_bins), np.linspace(min(grid_df['z']), max(grid_df['z']), n_bins)
+
+    x_grades_pts = []
+    x_grades_grid = []
+    x_n_pts = []
+
+    for idx, slice in enumerate(x_linspace):
+        if idx != 0:
+            pts_df_filter = (points_df['x'] >= x_linspace[idx-1]) & (points_df['x'] <= x_linspace[idx])
+            grid_df_filter = (grid_df['x'] >= x_linspace[idx-1]) & (grid_df['x'] <= x_linspace[idx])
+
+            x_grades_pts.append(np.mean(points_df[pts_df_filter]['var']))
+            x_grades_grid.append(np.mean(grid_df[grid_df_filter]['var'])) 
+            x_n_pts.append(len(points_df[pts_df_filter]['var']))
+
+    y_grades_pts = []
+    y_grades_grid = []
+    y_n_pts = []
+
+    for idx, slice in enumerate(y_linspace):
+        if idx != 0:
+            pts_df_filter = (points_df['y'] >= y_linspace[idx-1]) & (points_df['y'] <= y_linspace[idx])
+            grid_df_filter = (grid_df['y'] >= y_linspace[idx-1]) & (grid_df['y'] <= y_linspace[idx])
+
+            y_grades_pts.append(np.mean(points_df[pts_df_filter]['var']))
+            y_grades_grid.append(np.mean(grid_df[grid_df_filter]['var'])) 
+            y_n_pts.append(len(points_df[pts_df_filter]['var']))
+
+    z_grades_pts = []
+    z_grades_grid = []
+    z_n_pts = []
+
+    for idx, slice in enumerate(z_linspace):
+        if idx != 0:
+            pts_df_filter = (points_df['z'] >= z_linspace[idx-1]) & (points_df['z'] <= z_linspace[idx])
+            grid_df_filter = (grid_df['z'] >= z_linspace[idx-1]) & (grid_df['z'] <= z_linspace[idx])
+
+            z_grades_pts.append(np.mean(points_df[pts_df_filter]['var']))
+            z_grades_grid.append(np.mean(grid_df[grid_df_filter]['var'])) 
+            z_n_pts.append(len(points_df[pts_df_filter]['var']))
+
+    if sum(z) == 0:
+
+        fig = plotly.subplots.make_subplots(rows=2, cols=1)
+
+        tracepts = {
+        'type':'scatter',
+        'mode':'lines',
+        'x':x_linspace,
+        'y':x_grades_pts,
+        'name':'points in x',
+        'line':{'dash':'solid','color':'red'}
+        }
+
+        tracegrid = {
+        'type':'scatter',
+        'mode':'lines',
+        'x':x_linspace,
+        'y':x_grades_grid,
+        'name':'grid in x',
+        'line':{'dash':'solid','color':'blue'}
+        }
+
+        tracenpts = {
+        'type':'bar',
+        'x':x_linspace,
+        'y':x_n_pts,
+        'name':'number of points in x'
+        }
+
+        fig.append_trace(tracepts, 1, 1)
+        fig.append_trace(tracegrid, 1, 1)
+        fig.append_trace(tracenpts, 1, 1)
+
+        tracepts = {
+        'type':'scatter',
+        'mode':'lines',
+        'x':y_linspace,
+        'y':y_grades_pts,
+        'name':'points in y',
+        'line':{'dash':'solid','color':'red'}
+        }
+
+        tracegrid = {
+        'type':'scatter',
+        'mode':'lines',
+        'x':y_linspace,
+        'y':y_grades_grid,
+        'name':'grid in y',
+        'line':{'dash':'solid','color':'blue'}
+        }
+
+        tracenpts = {
+        'type':'bar',
+        'x':y_linspace,
+        'y':y_n_pts,
+        'name':'number of points in y'
+        }
+
+        fig.append_trace(tracepts, 2, 1)
+        fig.append_trace(tracegrid, 2, 1)
+        fig.append_trace(tracenpts, 2, 1)
+
+        fig.layout.update(title='Swath plots')
+
+        return pyo.iplot(fig)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
