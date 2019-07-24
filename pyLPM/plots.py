@@ -1,7 +1,7 @@
+from _plotly_future_ import v4_subplots
 import plotly.offline as pyo
 import plotly.graph_objs as go
-#from _plotly_future_ import v4_subplots
-from plotly.subplots import make_subplots
+import plotly
 import numpy as np
 from scipy.stats import gaussian_kde
 from scipy import stats
@@ -378,67 +378,93 @@ def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, 
 
 def xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figsize=(500,900)):
 
-    from _plotly_future_ import v4_subplots
+    fig = plotly.subplots.make_subplots(rows=1, cols=3)
 
-    fig = make_subplots(rows=1, cols=2)
+    real = np.where(real == -999.0, float('nan'), real)
+    estimate = np.where(estimate == -999.0, float('nan'), estimate)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(real,estimate)
 
-    real = np.where(x == -999.0, float('nan'), x)
-    estimate = np.where(y == -999.0, float('nan'), y)
+    trace = {
+    'type':'scatter',
+    'mode':'markers',
+    'x':real,
+    'y':estimate,
+    'marker':{'size':pointsize},
+    'name':'True x Estimates'
+    }
 
-    real, estimate = isotopic_arrays([x,y])[0], isotopic_arrays([x,y])[1]
+    fig.append_trace(trace, 1, 1)
 
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+    maxxy = [max(real), max(estimate)]
+    minxy = [min(real), min(estimate)]
+    vals = np.arange(min(minxy),max(maxxy))
+
+    trace = {
+    'type':'scatter',
+    'mode':'lines',
+    'x':vals,
+    'y':slope*vals+intercept,
+    'name':'best fit line',
+    'line':{'dash':'dot','color':'grey'}
+    }
+
+    fig.append_trace(trace, 1, 1)
+
+    maxxy = [max(real), max(estimate)]
+
+    trace = {
+    'type':'scatter',
+    'mode':'lines',
+    'x':[0,max(maxxy)],
+    'y':[0,max(maxxy)],
+    'name':'x=y line',
+    'line':{'dash':'dot','color':'red'}
+    }
+
+    fig.append_trace(trace, 1, 1)
+
+    hist, bin_edges = np.histogram(error, bins=20, density=True)
+    hist = hist*np.diff(bin_edges)
+    
+    trace = {
+    'type':'bar',
+    'x':bin_edges,
+    'y':hist,
+    'name':'error histogram'
+    }
+
+    fig.append_trace(trace, 1, 2)
+
+    trace = {
+    'type':'scatter',
+    'mode':'markers',
+    'x':real,
+    'y':error,
+    'marker':{'size':pointsize},
+    'name':'True x Error'
+    }
+
+    fig.append_trace(trace, 1, 3)
 
     statistics = '''
     n {}  <br />
+    min {} <br />
+    max {} <br />
+    mean {}  <br />
+    stdev {}  <br />
+    cv {}  <br />
     rho {} <br />
     slope {}
-    '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2), round(slope,2))
-    
-    fig.add_trace({
-        'type':'scatter',
-        'mode':'markers',
-        'x':x,
-        'y':y,
-        'marker':{'size':pointsize,'color':variable,'colorscale':colorscale,'showscale':False,'colorbar':{'title':colorbartitle}},
-        'text':variable,
-        'name':'Scatter'
-    },row=1,col=1)
+    '''.format(round(len(error),0), round(error.min(),2), round(error.max(),2),  round(error.mean(),2), round(np.sqrt(error.var()),2), round(np.sqrt(error.var())/error.mean(),2), round(np.corrcoef([real,estimate])[1,0],2), round(slope,2))
 
-    maxxy = [max(x), max(y)]
+    fig.layout.update(annotations=[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}])
 
-    fig.add_trace({
-        'type':'scatter',
-        'mode':'lines',
-        'x':[0,max(maxxy)],
-        'y':[0,max(maxxy)],
-        'name':'x=y line',
-        'line':{'dash':'dot','color':'red'}},row=1,col=1)
-
-    maxxy = [max(x), max(y)]
-    minxy = [min(x), min(y)]
-    vals = np.arange(min(minxy),max(maxxy))
-
-    fig.add_trace({
-        'type':'scatter',
-        'mode':'lines',
-        'x':vals,
-        'y':slope*vals+intercept,
-        'name':'best fit line',
-        'line':{'dash':'dot','color':'grey'}
-    }, row=1, col=1)
-
-
-    layout = {
-        'title':title,
-        'xaxis':{'title':x_axis,'zeroline':True,'autorange':True},
-        'yaxis':{'title':y_axis,'zeroline':True,'autorange':True},
-        'width':figsize[0],
-        'height':figsize[1],
-        'annotations':[{'text':statistics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
-    }
+    fig.layout.update(title='Cross validation results')
 
     return pyo.iplot(fig)
+
+def swath_plots():
+    pass
 
 
 

@@ -239,7 +239,6 @@ extdrift.dat                     -gridded file with drift/mean
     if option is 'cross' or option is 'jackknife':
 
         df1 = read_GeoEAS(output_file)
-        print(df1.head())
         real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
         plots.xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figsize=(500,900))
 

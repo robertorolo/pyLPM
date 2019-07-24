@@ -12,8 +12,8 @@ pyLPM/gslib90/tmp/tmp.dat                          -file with jackknife data
 0                                -debugging level: 0,1,2,3
 pyLPM/gslib90/tmp/debug.out                         -file for debugging output
 pyLPM/gslib90/tmp/output.out                         -file for kriged output
-17   8.0    15                  -nx,xmn,xsiz
-20   8.0    15                  -ny,ymn,ysiz
+25   8.0    10                  -nx,xmn,xsiz
+29   8.0    10                  -ny,ymn,ysiz
 1    0    1                  -nz,zmn,zsiz
 5    5      1                    -x,y and z block discretization
 4    8                           -min, max data for kriging
