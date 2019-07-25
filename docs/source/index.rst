@@ -12,6 +12,7 @@ Welcome to pyLPM's documentation!
 
    gslib.rst
    geostatalgo.rst
+   variogram.rst
    utils.rst
    plots.rst
    demo wl.ipynb
