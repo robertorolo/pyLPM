@@ -7,7 +7,7 @@ To import geostat algorithms module use:
 
 	from pyLPM import geostatalgo
 
-.. currentmodule:: geostatalgo
+.. currentmodule:: pyLPM.geostatalgo
 
 Nearest neighbor estimation
 ---------------------------------

@@ -7,7 +7,7 @@ To import gslib module use:
 
 	from pyLPM import gslib
 
-.. currentmodule:: gslib
+.. currentmodule:: pyLPM.gslib
 
 Cell declustering
 -------------------

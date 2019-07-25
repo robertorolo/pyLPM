@@ -7,7 +7,7 @@ To import utilities module use:
 
 	from pyLPM import utils
 
-.. currentmodule:: utils
+.. currentmodule:: pyLPM.utils
 
 Auto grid creation
 --------------------
