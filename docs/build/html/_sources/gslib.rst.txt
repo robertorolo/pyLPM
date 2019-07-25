@@ -5,7 +5,7 @@ To import gslib module use:
 
 .. code:: python
 
-	from pyLPM import pyLPM.gslib
+	from pyLPM import gslib
 
 .. currentmodule:: pyLPM.gslib
 
