@@ -6,10 +6,10 @@
 Welcome to pyLPM's documentation!
 =================================
 
-pyLPM is a free and open source python geostatistical library intended to be used in a jupyter notebook. Check `Walker lake demo`_ section in this documentation for a software overview. 
+pyLPM is a free and open source python geostatistical library intended to be used in a jupyter notebook. Check `Walker Lake demo`_ section in this documentation for a software overview. 
 The software is composed by five modules:
 
-* **GSLib** module is a wrapper around GSLib algorithms to permit a seamless integration with pyLPM.
+* **GSLib** module is a wrapper on top of GSLib algorithms to permit a seamless integration with pyLPM.
 * **Geostat algorithms** houses geostatistical algorithms developed by LPM or that are not available in the GSLib free version.
 * **Variography** module is packed with a full toolkit for spatial continuity analysis and variogram modeling.
 * **Utilities** is where the user will find functions to make the work easy and fast.
