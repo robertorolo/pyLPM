@@ -186,8 +186,9 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, best_fit_line=Tru
         statistics = '''
         n {}  <br />
         rho {} <br />
-        slope {}
-        '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2), round(slope,2))
+        slope {} <br />
+        intercept {}
+        '''.format(round(len(x),0), round(np.corrcoef([x,y])[1,0],2), round(slope,2), round(intercept,2))
     
     if type(variable) is not str:
         variable = np.where(variable == -999.0, float('nan'), variable)
