@@ -321,6 +321,6 @@ extdrift.dat                     -gridded file with drift/mean
 
         df1 = read_GeoEAS(output_file)
         real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
-        plots.xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figsize=(500,900))
+        plots.xval(real, estimate, error, pointsize=8, figsize=(500,900))
 
 
