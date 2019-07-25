@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/my_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Plots" href="plots.html" /> 
+    <link rel="next" title="GSLib algorithms" href="gslib.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -77,20 +77,39 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="gslib.html">GSLib algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gslib.html#cell-declustering">Cell declustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gslib.html#kriging">Kriging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geostatalgo.html">Geostat algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geostatalgo.html#nearest-neighbor-estimation">Nearest neighbor estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#auto-grid-creation">Auto grid creation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="plots.html">Plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#histogram">Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#scatterplot">Scatterplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#qq-plot">QQ plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#locmap">Locmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#pixel-plot">Pixel plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#swath-plots">Swath plots</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="demo wl.html">Walker lake Demo</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Markdown-cells-can-be-used-to-write-your-report">Markdown cells can be used to write your report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Importing-data">Importing data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-some-locations-maps">Plotting some locations maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-locations-maps">Plotting locations maps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-histograms">Plotting histograms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-a-scatterplot">Plotting a scatterplot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-a-qq-plot">Plotting a qq plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Running-declus-from-GSLib">Running declus from GSLib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Creating-a-grid">Creating a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Running-NN-from-Geostat-algorithms-module">Running NN from Geostat algorithms module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-the-declustered-histograms">Plotting the declustered histograms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Defining-a-grid">Defining a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Creating-another-grid">Creating another grid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Variography">Variography</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Cross-validation">Cross validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Kriging">Kriging</a></li>
@@ -191,20 +210,39 @@
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="gslib.html">GSLib algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gslib.html#cell-declustering">Cell declustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gslib.html#kriging">Kriging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geostatalgo.html">Geostat algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geostatalgo.html#nearest-neighbor-estimation">Nearest neighbor estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#auto-grid-creation">Auto grid creation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="plots.html">Plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#histogram">Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#scatterplot">Scatterplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#qq-plot">QQ plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots.html#locmap">Locmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#pixel-plot">Pixel plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#swath-plots">Swath plots</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="demo wl.html">Walker lake Demo</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Markdown-cells-can-be-used-to-write-your-report">Markdown cells can be used to write your report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Importing-data">Importing data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-some-locations-maps">Plotting some locations maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-locations-maps">Plotting locations maps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-histograms">Plotting histograms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-a-scatterplot">Plotting a scatterplot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-a-qq-plot">Plotting a qq plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Running-declus-from-GSLib">Running declus from GSLib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Creating-a-grid">Creating a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Running-NN-from-Geostat-algorithms-module">Running NN from Geostat algorithms module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-the-declustered-histograms">Plotting the declustered histograms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Defining-a-grid">Defining a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Creating-another-grid">Creating another grid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Variography">Variography</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Cross-validation">Cross validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Kriging">Kriging</a></li>
@@ -232,7 +270,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="plots.html" class="btn btn-neutral float-right" title="Plots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gslib.html" class="btn btn-neutral float-right" title="GSLib algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

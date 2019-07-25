@@ -10,6 +10,9 @@ Welcome to pyLPM's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   gslib.rst
+   geostatalgo.rst
+   utils.rst
    plots.rst
    demo wl.ipynb
 

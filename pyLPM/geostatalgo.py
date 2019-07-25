@@ -3,6 +3,18 @@ from pyLPM import utils
 import numpy as np
 
 def NN(x,y,z,var,grid):
+    """Neares neighbor estimator
+    
+    Args:
+        x (array): x coordinates data array
+        y (array): y coordinates data array
+        z (array): z coordinates data array
+        var (array): variable data array
+        grid (dict): grid definitions dictionary
+    
+    Returns:
+        array: NN results array
+    """
     mask = np.isfinite(var)
     if z is None:
         z = np.zeros(len(x))

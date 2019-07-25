@@ -11,12 +11,29 @@ from pyLPM import utils
 #############################################################################################################
 
 def weighted_avg_and_var(values, weights):
+    """Calculates weighted average and variance
+    
+    Args:
+        values (array): data values array
+        weights (array): weight values array
+    
+    Returns:
+        array: average, variance
+    """
     average = np.average(values, weights=weights)
     # Fast and numerically precise:
     variance = np.average((values-average)**2, weights=weights)
     return average, variance
 
 def isotopic_arrays(arrays):
+    """Extract isotopic group from arrays
+    
+    Args:
+        arrays (array): data values nd array
+    
+    Returns:
+        arrays: nd idotopic arrays
+    """
     masks = []
     for array in arrays:
         masks.append(np.isnan(array))
@@ -100,6 +117,21 @@ def locmap(x, y, variable, categorical=False, title='', x_axis='Easting (m)', y_
     return pyo.iplot(fig)
 
 def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=False, figsize=(700,700)):
+    """Histogram plot
+    
+    Args:
+        data (array): data values array
+        n_bins (int, optional): number of bins. Defaults to 20.
+        wt (array, optional): weights values array. Defaults to None.
+        title (str, optional): plot title. Defaults to ''.
+        x_axis (str, optional): x axis title. Defaults to ''.
+        y_axis (str, optional): y axis title. Defaults to ''.
+        cdf (bool, optional): cdf flag. Defaults to False.
+        figsize (tuple, optional): figure size. Defaults to (700,700).
+    
+    Returns:
+        iplot: histogram plot
+    """
 
     dataf = np.where(data == -999.0, float('nan'), data)
     dataf = data[~np.isnan(data)]
@@ -168,7 +200,26 @@ def histogram(data, n_bins=20, wt=None, title='', x_axis='', y_axis='', cdf=Fals
 
     return pyo.iplot(fig)
 
-def scatter2d(x, y, variable='kernel density', xy_line = True, best_fit_line=True, regression_line = True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Viridis', colorbartitle='', figsize=(700,700)):
+def scatter2d(x, y, variable='kernel density', xy_line = True, best_fit_line=True, title='', x_axis='', y_axis='', pointsize=8, colorscale='Viridis', colorbartitle='', figsize=(700,700)):
+    """2D scatter plot
+    
+    Args:
+        x (array): x variable data array
+        y (array): y variable data array
+        variable (str, optional): variable to color points. Defaults to 'kernel density'.
+        xy_line (bool, optional): x=y line flag. Defaults to True.
+        best_fit_line (bool, optional): best fit line flag. Defaults to True.
+        title (str, optional): plot title. Defaults to ''.
+        x_axis (str, optional): x axis title. Defaults to ''.
+        y_axis (str, optional): y axis title. Defaults to ''.
+        pointsize (int, optional): point size. Defaults to 8.
+        colorscale (str, optional): color scale. Defaults to 'Viridis'.
+        colorbartitle (str, optional): color bar title. Defaults to ''.
+        figsize (tuple, optional): figure size. Defaults to (700,700).
+    
+    Returns:
+        iplot: 2D scatter plot
+    """
 
     x = np.where(x == -999.0, float('nan'), x)
     y = np.where(y == -999.0, float('nan'), y)
@@ -259,6 +310,18 @@ def scatter2d(x, y, variable='kernel density', xy_line = True, best_fit_line=Tru
     return pyo.iplot(fig)
 
 def cell_declus_sum(cell_size, mean, title='Cell declus summary', pointsize=8, figsize=(600,600)):
+    """Cell declustering summary plot
+    
+    Args:
+        cell_size (array): cell sizes values array
+        mean (array): mean values array
+        title (str, optional): plt title. Defaults to 'Cell declus summary'.
+        pointsize (int, optional): point size. Defaults to 8.
+        figsize (tuple, optional): figure size. Defaults to (600,600).
+    
+    Returns:
+        iplot: cell declus summary plot
+    """
 
     index = np.where(mean == min(mean))[0][0]
 
@@ -289,6 +352,24 @@ def cell_declus_sum(cell_size, mean, title='Cell declus summary', pointsize=8, f
     return pyo.iplot(fig)
 
 def pixelplot(grid_dic, variable, categorical=False, points=None, gap=0, title='', x_axis='Easting (m)', y_axis='Northing (m)', colorscale='Jet', colorbartitle='', figsize=(700,700)):
+    """Pixel plot for gridded data
+    
+    Args:
+        grid_dic (dict): grid definitions dictionary
+        variable (array): data values array
+        categorical (bool, optional): categorical data flag. Defaults to False.
+        points (lst, optional): [x,y,z,var] list to plot points on top of grid. Defaults to None.
+        gap (int, optional): gap between blocks. Defaults to 0.
+        title (str, optional): plt title. Defaults to ''.
+        x_axis (str, optional): x axis title. Defaults to 'Easting (m)'.
+        y_axis (str, optional): y axis title. Defaults to 'Northing (m)'.
+        colorscale (str, optional): color scale. Defaults to 'Jet'.
+        colorbartitle (str, optional): color bar title. Defaults to ''.
+        figsize (tuple, optional):figure size. Defaults to (700,700).
+    
+    Returns:
+        iplot: pixel plot 
+    """
 
     variable = np.where(variable == -999, float('nan'), variable)
     
@@ -333,6 +414,21 @@ def pixelplot(grid_dic, variable, categorical=False, points=None, gap=0, title='
     return pyo.iplot(fig)
 
 def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, figsize=(700,700)):
+    """QQ plot
+    
+    Args:
+        x (array): x variable data array
+        y (array): y variable data array
+        dicretization (int, optional): number of quantiles to plot. Defaults to 100.
+        title (str, optional): plot title. Defaults to ''.
+        x_axis (str, optional): x axis title. Defaults to ''.
+        y_axis (str, optional): y axis title. Defaults to ''.
+        pointsize (int, optional): point size. Defaults to 8.
+        figsize (tuple, optional): figure size. Defaults to (700,700).
+    
+    Returns:
+        iplot: QQ plot
+    """
     
     x = np.where(x == -999.0, float('nan'), x)
     y = np.where(y == -999.0, float('nan'), y)
@@ -379,7 +475,19 @@ def qqplot(x,y, dicretization=100, title='', x_axis='', y_axis='', pointsize=8, 
 
     return pyo.iplot(fig)
 
-def xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figsize=(500,900)):
+def xval(real, estimate, error, pointsize=8, figsize=(500,900)):
+    """Cross validation results summary
+    
+    Args:
+        real (array): true values array
+        estimate (array): estimated values array
+        error (array): real - estimates array
+        pointsize (int, optional): point size. Defaults to 8.
+        figsize (tuple, optional): figure size. Defaults to (500,900).
+    
+    Returns:
+        iplot: cross validation summary
+    """
 
     fig = plotly.subplots.make_subplots(rows=1, cols=3)
 
@@ -467,6 +575,20 @@ def xval(real, estimate, error, x_axis='True', y_axis='False', pointsize=8, figs
     return pyo.iplot(fig)
 
 def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
+    """Swath plots in x, y and z
+    
+    Args:
+        x (array): x coordinates array
+        y (array): y coordinates array
+        z (array): z coordinates array
+        point_var (array): point variable array
+        grid (dict): grid definitions dictionary
+        grid_var (array): gridded variable array
+        n_bins (int, optional): number of bins. Defaults to 10.
+    
+    Returns:
+        iplot: swath plots
+    """
 
     mask_pt = np.isfinite(point_var)
     mask_grid = np.isfinite(grid_var)

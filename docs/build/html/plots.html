@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Walker lake Demo" href="demo wl.html" />
-    <link rel="prev" title="Welcome to pyLPM’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Utilities" href="utils.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -78,20 +78,39 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gslib.html">GSLib algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gslib.html#cell-declustering">Cell declustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gslib.html#kriging">Kriging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geostatalgo.html">Geostat algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geostatalgo.html#nearest-neighbor-estimation">Nearest neighbor estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#auto-grid-creation">Auto grid creation</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#histogram">Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scatterplot">Scatterplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qq-plot">QQ plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#locmap">Locmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pixel-plot">Pixel plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#swath-plots">Swath plots</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="demo wl.html">Walker lake Demo</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Markdown-cells-can-be-used-to-write-your-report">Markdown cells can be used to write your report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Importing-data">Importing data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-some-locations-maps">Plotting some locations maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-locations-maps">Plotting locations maps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-histograms">Plotting histograms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-a-scatterplot">Plotting a scatterplot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-a-qq-plot">Plotting a qq plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Running-declus-from-GSLib">Running declus from GSLib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Creating-a-grid">Creating a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Running-NN-from-Geostat-algorithms-module">Running NN from Geostat algorithms module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Plotting-the-declustered-histograms">Plotting the declustered histograms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Defining-a-grid">Defining a grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo wl.html#Creating-another-grid">Creating another grid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Variography">Variography</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Cross-validation">Cross validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo wl.html#Kriging">Kriging</a></li>
@@ -189,6 +208,113 @@
 </style>
 <div class="section" id="plots">
 <h1>Plots<a class="headerlink" href="#plots" title="Permalink to this headline">¶</a></h1>
+<p>To import plots module use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyLPM</span> <span class="kn">import</span> <span class="n">plots</span>
+</pre></div>
+</div>
+<div class="section" id="histogram">
+<h2>Histogram<a class="headerlink" href="#histogram" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="plots.histogram">
+<code class="descclassname">plots.</code><code class="descname">histogram</code><span class="sig-paren">(</span><em>data</em>, <em>n_bins=20</em>, <em>wt=None</em>, <em>title=''</em>, <em>x_axis=''</em>, <em>y_axis=''</em>, <em>cdf=False</em>, <em>figsize=(700</em>, <em>700)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Histogram plot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – data values array</li>
+<li><strong>n_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of bins. Defaults to 20.</li>
+<li><strong>wt</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a><em>, </em><em>optional</em>) – weights values array. Defaults to None.</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – plot title. Defaults to ‘’.</li>
+<li><strong>x_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – x axis title. Defaults to ‘’.</li>
+<li><strong>y_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – y axis title. Defaults to ‘’.</li>
+<li><strong>cdf</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – cdf flag. Defaults to False.</li>
+<li><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em>, </em><em>optional</em>) – figure size. Defaults to (700,700).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">histogram plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">iplot</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="scatterplot">
+<h2>Scatterplot<a class="headerlink" href="#scatterplot" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="plots.scatter2d">
+<code class="descclassname">plots.</code><code class="descname">scatter2d</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>variable='kernel density'</em>, <em>xy_line=True</em>, <em>best_fit_line=True</em>, <em>title=''</em>, <em>x_axis=''</em>, <em>y_axis=''</em>, <em>pointsize=8</em>, <em>colorscale='Viridis'</em>, <em>colorbartitle=''</em>, <em>figsize=(700</em>, <em>700)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#scatter2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.scatter2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D scatter plot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – x variable data array</li>
+<li><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – y variable data array</li>
+<li><strong>variable</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – variable to color points. Defaults to ‘kernel density’.</li>
+<li><strong>xy_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – x=y line flag. Defaults to True.</li>
+<li><strong>best_fit_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – best fit line flag. Defaults to True.</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – plot title. Defaults to ‘’.</li>
+<li><strong>x_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – x axis title. Defaults to ‘’.</li>
+<li><strong>y_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – y axis title. Defaults to ‘’.</li>
+<li><strong>pointsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – point size. Defaults to 8.</li>
+<li><strong>colorscale</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – color scale. Defaults to ‘Viridis’.</li>
+<li><strong>colorbartitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – color bar title. Defaults to ‘’.</li>
+<li><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em>, </em><em>optional</em>) – figure size. Defaults to (700,700).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">2D scatter plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">iplot</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="qq-plot">
+<h2>QQ plot<a class="headerlink" href="#qq-plot" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="plots.qqplot">
+<code class="descclassname">plots.</code><code class="descname">qqplot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dicretization=100</em>, <em>title=''</em>, <em>x_axis=''</em>, <em>y_axis=''</em>, <em>pointsize=8</em>, <em>figsize=(700</em>, <em>700)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#qqplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.qqplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>QQ plot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – x variable data array</li>
+<li><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – y variable data array</li>
+<li><strong>dicretization</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of quantiles to plot. Defaults to 100.</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – plot title. Defaults to ‘’.</li>
+<li><strong>x_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – x axis title. Defaults to ‘’.</li>
+<li><strong>y_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – y axis title. Defaults to ‘’.</li>
+<li><strong>pointsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – point size. Defaults to 8.</li>
+<li><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em>, </em><em>optional</em>) – figure size. Defaults to (700,700).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">QQ plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">iplot</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="locmap">
 <h2>Locmap<a class="headerlink" href="#locmap" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -225,6 +351,74 @@
 </dd></dl>
 
 </div>
+<div class="section" id="pixel-plot">
+<h2>Pixel plot<a class="headerlink" href="#pixel-plot" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="plots.pixelplot">
+<code class="descclassname">plots.</code><code class="descname">pixelplot</code><span class="sig-paren">(</span><em>grid_dic</em>, <em>variable</em>, <em>categorical=False</em>, <em>points=None</em>, <em>gap=0</em>, <em>title=''</em>, <em>x_axis='Easting (m)'</em>, <em>y_axis='Northing (m)'</em>, <em>colorscale='Jet'</em>, <em>colorbartitle=''</em>, <em>figsize=(700</em>, <em>700)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#pixelplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.pixelplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pixel plot for gridded data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid_dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – grid definitions dictionary</li>
+<li><strong>variable</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – data values array</li>
+<li><strong>categorical</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – categorical data flag. Defaults to False.</li>
+<li><strong>points</strong> (<em>lst</em><em>, </em><em>optional</em>) – [x,y,z,var] list to plot points on top of grid. Defaults to None.</li>
+<li><strong>gap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – gap between blocks. Defaults to 0.</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – plt title. Defaults to ‘’.</li>
+<li><strong>x_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – x axis title. Defaults to ‘Easting (m)’.</li>
+<li><strong>y_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – y axis title. Defaults to ‘Northing (m)’.</li>
+<li><strong>colorscale</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – color scale. Defaults to ‘Jet’.</li>
+<li><strong>colorbartitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – color bar title. Defaults to ‘’.</li>
+<li><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em>, </em><em>optional</em>) – figure size. Defaults to (700,700).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">pixel plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">iplot</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="swath-plots">
+<h2>Swath plots<a class="headerlink" href="#swath-plots" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="plots.swath_plots">
+<code class="descclassname">plots.</code><code class="descname">swath_plots</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>point_var</em>, <em>grid</em>, <em>grid_var</em>, <em>n_bins=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/plots.html#swath_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#plots.swath_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Swath plots in x, y and z</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – x coordinates array</li>
+<li><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – y coordinates array</li>
+<li><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – z coordinates array</li>
+<li><strong>point_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – point variable array</li>
+<li><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – grid definitions dictionary</li>
+<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.7)"><em>array</em></a>) – gridded variable array</li>
+<li><strong>n_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of bins. Defaults to 10.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">swath plots</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">iplot</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -238,7 +432,7 @@
         <a href="demo wl.html" class="btn btn-neutral float-right" title="Walker lake Demo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to pyLPM’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral" title="Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
