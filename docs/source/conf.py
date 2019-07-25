@@ -20,8 +20,8 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
-#sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('..'))
+#sys.path.insert(0, os.path.abspath('../pyLPM'))
 #sys.path.append('D:\\git\\educational_geostat_gslib\\pyLPM')
 #sys.path.append('D:\\git\\educational_geostat_gslib')
 

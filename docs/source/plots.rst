@@ -7,7 +7,7 @@ To import plots module use:
 
 	from pyLPM import plots
 
-.. currentmodule:: plots
+.. currentmodule:: pyLPM.plots
 
 Histogram
 ----------
