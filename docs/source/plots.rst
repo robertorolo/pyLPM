@@ -1,11 +1,7 @@
 Plots
 ======
 
-To import plots module use:
-
-.. code:: python
-
-	from pyLPM import plots
+This module houses the interactive plotting functions.
 
 .. currentmodule:: pyLPM.plots
 

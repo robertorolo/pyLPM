@@ -1,11 +1,7 @@
 GSLib algorithms
 =======================
 
-To import gslib module use:
-
-.. code:: python
-
-	from pyLPM import gslib
+This module is wrapper on top of GSLib to run its algorithms inside a jupyter notebook in a seamless integration with pyLPM.
 
 .. currentmodule:: pyLPM.gslib
 

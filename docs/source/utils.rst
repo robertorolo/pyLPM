@@ -1,11 +1,7 @@
 Utilities
 =============
 
-To import utilities module use:
-
-.. code:: python
-
-	from pyLPM import utils
+This module houses utilities functions.
 
 .. currentmodule:: pyLPM.utils
 

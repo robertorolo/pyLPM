@@ -1,11 +1,7 @@
 Geostat algorithms
 =======================
 
-To import geostat algorithms module use:
-
-.. code:: python
-
-	from pyLPM import geostatalgo
+This module houses geostatistical algorithms developed by LPM.
 
 .. currentmodule:: pyLPM.geostatalgo
 
