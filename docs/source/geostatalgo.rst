@@ -1,7 +1,7 @@
 Geostat algorithms
 =======================
 
-To import plots module use:
+To import geostat algorithms module use:
 
 .. code:: python
 

@@ -1,7 +1,7 @@
 GSLib algorithms
 =======================
 
-To import plots module use:
+To import gslib module use:
 
 .. code:: python
 

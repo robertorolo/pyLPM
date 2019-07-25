@@ -1,7 +1,7 @@
 Utilities
 =============
 
-To import plots module use:
+To import utilities module use:
 
 .. code:: python
 
