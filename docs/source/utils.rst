@@ -5,7 +5,7 @@ This module houses utilities functions.
 
 .. currentmodule:: pyLPM.utils
 
-Auto grid creation
---------------------
+Automatic grid creation
+--------------------------
 
 .. autofunction:: autogrid
