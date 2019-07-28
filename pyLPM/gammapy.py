@@ -835,7 +835,7 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 ##############################################################################################################################################	
 
 def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
-	"""Pot varmap
+	"""Opens interactive variogram map controls.
 	
 	Args:
 		dataset (DataFrame): Data points DataFrame
