@@ -18,4 +18,4 @@ Experimental variogram
 Interactive modeling
 -----------------------
 
-.. autofunction:: interactive_modeling
+.. autofunction:: interactive_modelling
