@@ -4,3 +4,4 @@ nbsphinx
 sphinx_rtd_theme==0.4.2
 plotly
 ipywidgets
+sklearn
