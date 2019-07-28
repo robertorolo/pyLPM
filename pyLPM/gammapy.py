@@ -759,7 +759,7 @@ def _modelling_to_interact(**kargs):
 ##############################################################################################################################################
 
 def interactive_modelling(experimental_dataframe, directions, number_of_structures, show_pairs = False):
-	"""Opens the interactive modeling controlls
+	"""Opens the interactive variogram modeling controls
 	
 	Args:
 		experimental_dataframe (DataFrame): Experimental variogram DataFrame
@@ -835,7 +835,7 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 ##############################################################################################################################################	
 
 def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
-	"""Pot varmap
+	"""Opens interactive variogram map controls.
 	
 	Args:
 		dataset (DataFrame): Data points DataFrame
@@ -919,7 +919,7 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 ##############################################################################################################################################
 
 def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs =False,  Z =None, choice =1.0):
-	"""Calculates experimental variogram
+	"""Opens interactive experimental variogram controls.
 	
 	Args:
 		dataset (DataFrame): data points DataFrame
