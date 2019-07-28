@@ -48,7 +48,14 @@ def setup(app):
     app.add_javascript('https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js')
 
 def setup(app):
-    app.add_stylesheet('my_theme.css')   
+    app.add_stylesheet('my_theme.css')
+
+from ipywidgets.embed import DEFAULT_EMBED_REQUIREJS_URL
+
+html_js_files = [
+    'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js',
+    DEFAULT_EMBED_REQUIREJS_URL,
+]   
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
