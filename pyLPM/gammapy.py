@@ -759,10 +759,10 @@ def _modelling_to_interact(**kargs):
 ##############################################################################################################################################
 
 def interactive_modelling(experimental_dataframe, directions, number_of_structures, show_pairs = False):
-	"""Opens the interactive modeling controlls
+	"""Opens the interactive modeling controlls. Store the results in a global variable `gammapy.return_model_var`.
 	
 	Args:
-		experimental_dataframe (DataFrame): Experimental variogram DataFrame
+		experimental_dataframe (DataFrame): Experimental variogram DataFrame. Assessed by `gammapy.return_exp_var`
 		directions (lst): directions to model variogram
 		number_of_structures (int): number of structures
 		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
@@ -844,7 +844,7 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 		head (str): head property name
 		tail (str): tail property name
 		Z (str, optional): z coordinates column name. Defaults to None.
-		choice (float, optional): [description]. Defaults to 1.0.
+		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	"""
 
 	# set same seed 
@@ -919,7 +919,7 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 ##############################################################################################################################################
 
 def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs =False,  Z =None, choice =1.0):
-	"""Calculates experimental variogram
+	"""Calculates experimental variogram. Store the results in a global variable `gammapy.return_exp_var`.
 	
 	Args:
 		dataset (DataFrame): data points DataFrame
@@ -930,7 +930,7 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 		ndirections (int): number of directions
 		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
 		Z (str, optional): z coordinates column name. Defaults to None.
-		choice (float, optional): [description]. Defaults to 1.0.
+		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	"""
 
 	global return_values_from_exp_var 
