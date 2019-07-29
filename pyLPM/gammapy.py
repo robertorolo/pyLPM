@@ -29,6 +29,7 @@ import math
 import numba
 import warnings
 import math
+import os
 
 # INITIALIZE OFFLINE NOTEBOOK MODE
 pyo.init_notebook_mode()
