@@ -2,7 +2,7 @@ from scipy.interpolate import NearestNDInterpolator
 from pyLPM import utils
 import numpy as np
 
-def NN(x,y,z,var,grid):
+def nn(x,y,z,var,grid):
     """Neares neighbor estimator
     
     Args:

@@ -8,4 +8,4 @@ This module houses geostatistical algorithms developed by LPM.
 Nearest neighbor estimation
 ---------------------------------
 
-.. autofunction:: NN
+.. autofunction:: nn

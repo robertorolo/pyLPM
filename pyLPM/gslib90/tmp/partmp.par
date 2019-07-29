@@ -25,6 +25,6 @@ pyLPM/gslib90/tmp/output.out                         -file for kriged output
 0                                -0, variable; 1, estimate trend
 extdrift.dat                     -gridded file with drift/mean
 4                                -  column number in gridded file
-1 18996.71085 
-1 40842.92832 0.0 0.0 0.0 
- 25.3777 31.04506 16.50052 
+1 45000 
+1 40000.0 160.0 0.0 0.0 
+ 70.0 5.0 0.0 

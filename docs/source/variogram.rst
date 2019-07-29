@@ -8,14 +8,20 @@ This module houses tools for spatial continuity analysis and variogram calculati
 Variogram map
 ---------------
 
+.. autofunction:: varmap
+
 .. autofunction:: interactive_varmap
 
 Experimental variogram
 -------------------------
 
+.. autofunction:: experimental
+
 .. autofunction:: interactive_experimental
 
-Interactive modeling
+Variogram modeling
 -----------------------
+
+.. autofunction:: modelling
 
 .. autofunction:: interactive_modelling

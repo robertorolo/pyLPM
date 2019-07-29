@@ -844,22 +844,33 @@ def interactive_modelling(experimental_dataframe, number_of_structures, show_pai
 
 ##############################################################################################################################################
 
-def modelling_function(experimental_dict, rotation_max, rotation_med, rotation_min,
+def modelling(experimental_dict, rotation_max, rotation_med, rotation_min,
 	nugget,inverted, rangemax, rangemed, rangemin, model, contribution, show_pairs = False):
-	"""Opens the interactive modeling controlls. Store the results in a global variable `gammapy.return_model_var`.
+	"""Variogram modeling function without interactive controlls.
 	
 	Args:
-		experimental_dataframe (DataFrame): Experimental variogram DataFrame. Assessed by `gammapy.return_exp_var`
-		directions (lst): directions to model variogram
-		number_of_structures (int): number of structures
-		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+		experimental_dict (dict): experimental variogram 
+		rotation_max (float): azimuth
+		rotation_med (float): dip
+		rotation_min (float): rake
+		nugget (float): nugget contribution
+		inverted (bool): inverted model flag
+		rangemax (lst): list of ranges in maximum continuity direction for each structure
+		rangemed (lst): list of ranges in intermediate continuity direction for each structure
+		rangemin (lst): list of ranges in minumim continuity direction for each structure
+		model (lst of str): lst of models for each structure. `Spherical`, `Exponential` or `Gaussian`.
+		contribution (lst of floats): list of contributions for each structure
+		show_pairs (bool, optional): Show pairs flag. Defaults to False.
+
+	Returns:
+		dict: variogram model DataFrame
 	"""
 
 
 
 	azimuths = experimental_dict['Directions'][0]
 	dips = experimental_dict['Directions'][1]
-	number_of_structures = len(experimental_dict['Values'])
+	number_of_structures = len(rangemax)
 	outputs = {'experimental_dataframe': experimental_dict['Values'],
 			   'azimuths' : azimuths,
 			   'dips' : dips,
@@ -879,7 +890,7 @@ def modelling_function(experimental_dict, rotation_max, rotation_med, rotation_m
 	outputs['show_pairs'] = show_pairs
 		
 
-	_modelling_to_interact(**outputs)
+	return _modelling_to_interact(**outputs)
 	
 
 
@@ -969,16 +980,22 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 
 ##############################################################################################################################################
 
-def variogram_map(dataset, X, Y, head, tail, azimuth, dip, nlags, lagdistance, ndirections, type_var,  Z =None, choice =1.0):
-	"""Opens interactive variogram map controls.
+def varmap(dataset, X, Y, head, tail, azimuth, dip, nlags, lagdistance, ndirections, type_var,  Z =None, choice =1.0):
+	"""Plots a variogram map.
 	
 	Args:
-		dataset (DataFrame): Data points DataFrame
-		X (str): x column coordinates name
-		Y (str): y column cordinates name
-		head (str): head property name
-		tail (str): tail property name
-		Z (str, optional): z coordinates column name. Defaults to None.
+		dataset (DataFrame): Point set DataFrame
+		X (str): x coordinates column name
+		Y (str): y coordinates column name
+		head (str): head variable name
+		tail (str): tail variable name
+		azimuth (float): azimuth
+		dip (float): dip
+		nlags (int): number of lags
+		lagdistance (float): lag distance
+		ndirections (int): number of directions
+		type_var (str): covariance funcrion type. `Variogram`, `Correlogram` ...
+		Z (str, optional): z coordinates variable name. Defaults to None.
 		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	"""
 
@@ -1137,22 +1154,36 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 
 ##############################################################################################################################################
 
-def experimental_function(dataset, X, Y, head, tail,type_c,
+def experimental(dataset, X, Y, head, tail,type_c,
  nlags, lagsize, lineartol,htol, vtol, hband, vband, azimuth, dip, omni, 
  show_pairs =False,  Z =None, choice =1.0):
 	"""Calculates experimental variogram. Store the results in a global variable `gammapy.return_exp_var`.
 	
 	Args:
-		dataset (DataFrame): data points DataFrame
-		X (str): x coorcinates column name
+		dataset (DataFrame): point set DataFrame
+		X (str): x coordinates column name
 		Y (str): y coordinates column name
-		head (str): head variabl
-		tail (str): tail variable
-		ndirections (int): number of directions
-		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+		head (str): head variable name
+		tail (str): tail variable name
+		type_c (lst of str): covariance funcrion type list. `Variogram`, `Correlogram` ...
+		nlags (lst): list of lag number for each direction
+		lagsize (lst): list of lag size for each direction
+		lineartol (lst): list of linear tolerance for each direction
+		htol (lst): list of horizontal tolerance for each direction
+		vtol (lst): liist of vertical tolerance for each direction
+		hband (lst): list of horizontal band for each direction
+		vband (lst): list of vertical band for each direction
+		azimuth (lst): azimuth
+		dip (lst): dip
+		omni (bool): omnidirectionl flag
+		show_pairs (bool, optional): show pairs flag. Defaults to False.
 		Z (str, optional): z coordinates column name. Defaults to None.
 		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	
+	Returns:
+		dict: experimental variogram DataFrame
 	"""
+
 	ndirections = len(nlags)
 
 	if Z == None:
