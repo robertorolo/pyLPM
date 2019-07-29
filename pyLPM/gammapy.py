@@ -914,6 +914,8 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 
 	# Define the Ipython Widgets 
 
+	warnings.filterwarnings('ignore')
+
 	azimuth = widgets.BoundedFloatText(value=0,min = 0, max = 360, description='Azimuth:',disabled=False)
 	dip = widgets.BoundedFloatText(value=0,min= 0 , max=360, description='Dip:',disabled=False)
 	nlags = widgets.BoundedIntText(value=5,min= 1, max= 1000000, description='Nlags:',disabled=False)
@@ -1003,6 +1005,8 @@ def varmap(dataset, X, Y, head, tail, azimuth, dip, nlags, lagdistance, ndirecti
 
 
 	# Define tolerance properties according Ipython values 
+
+	warnings.filterwarnings('ignore')
 
 	lineartolerance = lagdistance/2.0
 	hband = lagdistance/2.0
