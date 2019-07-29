@@ -29,6 +29,7 @@ import math
 import numba
 import warnings
 import math
+import os
 
 # INITIALIZE OFFLINE NOTEBOOK MODE
 pyo.init_notebook_mode()
@@ -859,7 +860,7 @@ def modelling_function(experimental_dict, rotation_max, rotation_med, rotation_m
 
 	azimuths = experimental_dict['Directions'][0]
 	dips = experimental_dict['Directions'][1]
-	number_of_structures = len(experimental_dict['Values'])
+	number_of_structures = len(rangemax)
 	outputs = {'experimental_dataframe': experimental_dict['Values'],
 			   'azimuths' : azimuths,
 			   'dips' : dips,
