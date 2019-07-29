@@ -525,13 +525,17 @@ def _modelling(experimental_dataframe,azimuths, dips, rotation_reference,
 ##############################################################################################################################################
 	
 def _varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, dataset, x_label, y_label, z_label, nlags, 
-					lagdistance, head_property, tail_property, ndirections, wait_please, choice = 5000):
+					lagdistance, head_property, tail_property, ndirections, wait_please, choice = 5000, interactive = False):
+
 
 	X = dataset[x_label].values
 	Y = dataset[y_label].values
 	Z = dataset[z_label].values
 
-	wait_please.value = 0
+	if interactive == True:
+			wait_please.value = 0
+
+	
 
 	Xrot, Yrot, Zrot = _rotate_data(X, Y, Z, azimuth, dip)
 
@@ -540,7 +544,8 @@ def _varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, d
 	continuidade = []
 	for i in np.arange(0,360,ndirections):
 
-		wait_please.value += 1
+		if interactive == True:
+			wait_please.value += 1
 		df_exp = _calculate_experimental_function_varmap(type_var,  lineartolerance, htol, vtol, hband, vband, 
 					i, 0,dataset, nlags, Xrot, Yrot,Zrot,lagdistance, head_property, tail_property, choice)
 		var_val = df_exp['Spatial continuity'].values
@@ -711,6 +716,7 @@ def _modelling_to_interact(**kargs):
 	dips = kargs.get('dips')
 
 
+
 	dfs = []
 	for j, i in enumerate(kargs.get('experimental_dataframe')):
 		dfs.append(_modelling(i, azimuths[j], dips[j], rotation_reference,model_func ,ranges,contribution,nugget, inverted))
@@ -737,9 +743,9 @@ def _modelling_to_interact(**kargs):
 		fig.add_trace(go.Scatter(x=i['distances'], y=i['model'],
                 mode='lines',
                 name='Model'), row=count_row, col=count_cols )
-		fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols)
-		fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols)
-		fig.update_layout(margin=dict(l=5, r=40, t=20, b=20))
+		fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols, automargin = True)
+		fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols, automargin=True)
+		fig.update_layout(autosize=True)
 
 		count_cols += 1
 		if count_cols > 4:
@@ -756,9 +762,11 @@ def _modelling_to_interact(**kargs):
 						'contribution': contribution, 
 						'ranges' : ranges}
 
+	return return_model_var
+
 ##############################################################################################################################################
 
-def interactive_modelling(experimental_dataframe, directions, number_of_structures, show_pairs = False):
+def interactive_modelling(experimental_dataframe, number_of_structures, show_pairs = False):
 	"""Opens the interactive modeling controlls. Store the results in a global variable `gammapy.return_model_var`.
 	
 	Args:
@@ -770,14 +778,14 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 
 
 
-	azimuths = directions[0]
-	dips = directions[1] 
+	azimuths = experimental_dataframe['Directions'][0]
+	dips = experimental_dataframe['Directions'][1] 
 
 
 	rotation_max = widgets.FloatSlider(description='Rotação Azim', min= 0, max= 360, step=1,continuous_update=False)
 	rotation_med = widgets.FloatSlider(description='Rotação Dip',min= 0, max= 360, step=1,continuous_update=False)
 	rotation_min =  widgets.FloatSlider(description='Rotação Rake',min= 0, max= 360, step=1,continuous_update=False)
-	nugget = widgets.FloatSlider(description='Pepita',min= 0, max= 2*max(experimental_dataframe[0]['Spatial continuity']), step=10*max(experimental_dataframe[0]['Spatial continuity'])/1000,continuous_update=False)
+	nugget = widgets.FloatSlider(description='Pepita',min= 0, max= 2*max(experimental_dataframe['Values'][0]['Spatial continuity']), step=10*max(experimental_dataframe['Values'][0]['Spatial continuity'])/1000,continuous_update=False)
 	inverted = widgets.Checkbox(description='Inverter a modelagem')
 
 
@@ -787,9 +795,9 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 	grid1 = GridspecLayout(number_of_structures, 1)
 	values1 = []
 	for i in range(number_of_structures):
-		values1.append([widgets.FloatSlider(description='Alcance máximo', min= 0, max= 2*max(experimental_dataframe[0]['Average distance']), step=max(experimental_dataframe[0]['Average distance'])/1000.0,continuous_update=False),
-		 widgets.FloatSlider(description='Alcance médio', min= 0, max= 2*max(experimental_dataframe[0]['Average distance']), step=max(experimental_dataframe[0]['Average distance'])/1000.0,continuous_update=False), 
-		 widgets.FloatSlider(description='Alcance mínimo',min= 0, max= 2*max(experimental_dataframe[0]['Average distance']), step=max(experimental_dataframe[0]['Average distance'])/1000.0,continuous_update=False)])
+		values1.append([widgets.FloatSlider(description='Alcance máximo', min= 0, max= 2*max(experimental_dataframe['Values'][0]['Average distance']), step=max(experimental_dataframe['Values'][0]['Average distance'])/1000.0,continuous_update=False),
+		 widgets.FloatSlider(description='Alcance médio', min= 0, max= 2*max(experimental_dataframe['Values'][0]['Average distance']), step=max(experimental_dataframe['Values'][0]['Average distance'])/1000.0,continuous_update=False), 
+		 widgets.FloatSlider(description='Alcance mínimo',min= 0, max= 2*max(experimental_dataframe['Values'][0]['Average distance']), step=max(experimental_dataframe['Values'][0]['Average distance'])/1000.0,continuous_update=False)])
 		grid1[i,0] = widgets.HBox(values1[i])
 
 	u4 = widgets.HBox([nugget, inverted])
@@ -798,7 +806,7 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 	grid2 = GridspecLayout((number_of_structures+1), 1)
 	for i in range(number_of_structures):
 		values2.append([widgets.Dropdown(options= ['Spherical','Exponential','Gaussian']), 
-			widgets.FloatSlider(description='Contribution',min= 0, max= 2*max(experimental_dataframe[0]['Spatial continuity']), step=max(experimental_dataframe[0]['Spatial continuity'])/1000,continuous_update=False)])
+			widgets.FloatSlider(description='Contribution',min= 0, max= 2*max(experimental_dataframe['Values'][0]['Spatial continuity']), step=max(experimental_dataframe['Values'][0]['Spatial continuity'])/1000,continuous_update=False)])
 		grid2[i,0] = widgets.HBox(values2[i])
 	grid2[number_of_structures,0] = u4
 
@@ -809,7 +817,7 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 	accordion.set_title(1, 'Alcance dos eixos principais ')
 	accordion.set_title(2, 'Função, contribuição e efeito pepita')
 
-	outputs = {'experimental_dataframe': fixed(experimental_dataframe),
+	outputs = {'experimental_dataframe': fixed(experimental_dataframe['Values']),
 			   'azimuths' : fixed(azimuths),
 			   'dips' : fixed(dips),
 			   'nstructures': fixed(number_of_structures), 
@@ -830,6 +838,49 @@ def interactive_modelling(experimental_dataframe, directions, number_of_structur
 
 	out = widgets.interactive_output(_modelling_to_interact, outputs)
 	display(accordion,  out)
+
+
+##############################################################################################################################################	
+
+##############################################################################################################################################
+
+def modelling_function(experimental_dict, rotation_max, rotation_med, rotation_min,
+	nugget,inverted, rangemax, rangemed, rangemin, model, contribution, show_pairs = False):
+	"""Opens the interactive modeling controlls. Store the results in a global variable `gammapy.return_model_var`.
+	
+	Args:
+		experimental_dataframe (DataFrame): Experimental variogram DataFrame. Assessed by `gammapy.return_exp_var`
+		directions (lst): directions to model variogram
+		number_of_structures (int): number of structures
+		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+	"""
+
+
+
+	azimuths = experimental_dict['Directions'][0]
+	dips = experimental_dict['Directions'][1]
+	number_of_structures = len(experimental_dict['Values'])
+	outputs = {'experimental_dataframe': experimental_dict['Values'],
+			   'azimuths' : azimuths,
+			   'dips' : dips,
+			   'nstructures': number_of_structures, 
+			   'rotation_max' : rotation_max,
+			   'rotation_med' :rotation_med,
+			   'rotation_min' : rotation_min,
+			   'nugget': nugget,
+			   'inverted' : inverted}
+	
+	for i in range(number_of_structures):
+		outputs['rangemax_{}'.format(str(i))] = rangemax[i]
+		outputs['rangemed_{}'.format(str(i))] = rangemed[i]
+		outputs['rangemin_{}'.format(str(i))] = rangemin[i] 
+		outputs['model_{}'.format(str(i))] = model[i]
+		outputs['contribution_{}'.format(str(i))] = contribution[i]
+	outputs['show_pairs'] = show_pairs
+		
+
+	_modelling_to_interact(**outputs)
+	
 
 
 ##############################################################################################################################################	
@@ -907,13 +958,54 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
 		def on_varmap(change):	
 			_varmap(azimuth.value,0, lineartolerance, htol, vtol, hband, vband, type_var.value, dataset, X, Y, 'Z', nlags.value, 
-					lagdistance.value, head, tail, ndirections.value, wait_please,  choice)
+					lagdistance.value, head, tail, ndirections.value, wait_please,  choice, True)
 	else: 
 		def on_varmap(change):			
 			_varmap(azimuth.value, dip.value, lineartolerance, htol, vtol, hband, vband, type_var.value, dataset, X, Y, Z, nlags.value, 
-					lagdistance.value, head, tail, ndirections.value, wait_please,  choice)
+					lagdistance.value, head, tail, ndirections.value, wait_please,  choice, True)
 
 	execute.on_click(on_varmap)
+
+
+##############################################################################################################################################
+
+def variogram_map(dataset, X, Y, head, tail, azimuth, dip, nlags, lagdistance, ndirections, type_var,  Z =None, choice =1.0):
+	"""Opens interactive variogram map controls.
+	
+	Args:
+		dataset (DataFrame): Data points DataFrame
+		X (str): x column coordinates name
+		Y (str): y column cordinates name
+		head (str): head property name
+		tail (str): tail property name
+		Z (str, optional): z coordinates column name. Defaults to None.
+		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	"""
+
+	# set same seed 
+
+
+	# Define tolerance properties according Ipython values 
+
+	lineartolerance = lagdistance/2.0
+	hband = lagdistance/2.0
+	vband= lagdistance/2.0
+	htol = 360/(ndirections)
+	vtol = 360/(ndirections)
+
+	wait_please = 0 
+
+	# Calling varmap according 2D or 3D dataset 
+
+	if Z == None:
+		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
+		_varmap(azimuth,0, lineartolerance, htol, vtol, hband, vband, type_var, dataset, X, Y, 'Z', nlags, 
+					lagdistance, head, tail, ndirections, wait_please,  choice)
+	else:
+		_varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, dataset, X, Y, Z, nlags, 
+					lagdistance, head, tail, ndirections, wait_please,  choice)
+
+
 
 
 ##############################################################################################################################################
@@ -940,39 +1032,38 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 		Z = 'Z'			
 
 	widgets_l = []
-	hboxes = []
+	vboxes = []
 	for i in range(ndirections):
 		widgets_l.append([widgets.Dropdown(options=['Variogram', 'Covariogram', 'Correlogram','PairWise', 'RelativeVariogram' ],value='Variogram',description='Type:',disabled=False),
 			widgets.BoundedFloatText(value=0,min = 0, max = 360, description='Azimuth:',disabled=False),
 			widgets.BoundedFloatText(value=0,min = 0, max = 360, description='Dip:',disabled=False), 
-			widgets.BoundedIntText(value=1,min = 1, max = 10000, description='nlags:',disabled=False),
-			widgets.BoundedFloatText(value=0.000000001,min = 0.000000001, max = 1000000000, description='lagsize:',disabled=False),
-			widgets.BoundedFloatText(value=0.000000001,min = 0.000000001, max = 1000000000, description='lineartol:',disabled=False),
-			widgets.BoundedFloatText(value=0.000000001,min = 0.000000001, max = 90, description='htol:', disabled=False),
-			widgets.BoundedFloatText(value=0.000000001,min = 0.000000001, max = 90, description='vtol:', disabled=False),
-			widgets.BoundedFloatText(value=0.000000001,min = 0.000000001, max = 90, description='hband:', disabled=False),
-			widgets.BoundedFloatText(value=0.000000001,min = 0.000000001, max = 1000000000, description='vband:', disabled=False),
+			widgets.BoundedIntText(value=10,min = 1, max = 10000, description='nlags:',disabled=False),
+			widgets.BoundedFloatText(value=10,min = 0.000000001, max = 1000000000, description='lagsize:',disabled=False),
+			widgets.BoundedFloatText(value=10,min = 0.000000001, max = 1000000000, description='lineartol:',disabled=False),
+			widgets.BoundedFloatText(value=10,min = 0.000000001, max = 90, description='htol:', disabled=False),
+			widgets.BoundedFloatText(value=10,min = 0.000000001, max = 90, description='vtol:', disabled=False),
+			widgets.BoundedFloatText(value=10,min = 0.000000001, max = 90, description='hband:', disabled=False),
+			widgets.BoundedFloatText(value=10,min = 0.000000001, max = 1000000000, description='vband:', disabled=False),
 			widgets.Dropdown(options=[True, False ],value=False,description='Omni:',disabled=False)])
-		hboxes.append(widgets.HBox(widgets_l[i]))
+		vboxes.append(widgets.VBox(widgets_l[i], layout=widgets.Layout(width='370px')))
 
 
 
 	execute = widgets.Button(description='Execute',icon='check')
 	output = widgets.Output()
 
-	# Defining progress bar 
+	# Defining progress bar widgets.HBox([execute, wait_please], display='flex',align_items='stretch',width='50%')
 
 	max_count = 1000
 	wait_please = widgets.IntProgress(min=0, max=ndirections) # instantiate the bar
 
 
 
-	grid = GridspecLayout(ndirections+1, 1)
-	for i in range(ndirections):
-		grid[i,0] = hboxes[i]
-	grid[ndirections,0] = widgets.HBox([execute, wait_please])
+	grid = widgets.HBox(vboxes, layout=widgets.Layout(width='5000px'))
+	box2 = widgets.HBox([execute, wait_please], display='flex',align_items='stretch',width='50%')
+	box3 = widgets.VBox([grid, box2], display='flex',align_items='stretch',width='50%')
 
-	children = [grid]
+	children = [box3]
 	accordion = widgets.Accordion(children=children)
 	accordion.set_title(0, 'Experimental parameters')
 
@@ -1008,7 +1099,9 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 						nlags[i], head, tail, choice, omni[i]))
 
 		global return_exp_var
-		return_exp_var = dfs
+		returning = {'Directions': [azimuth, dip],
+					 'Values' : dfs}
+		return_exp_var = returning
 
 	
 		size_row = 1 if len(dfs) < 4 else int(math.ceil(len(dfs)/4))
@@ -1029,9 +1122,9 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 					marker= dict(color =dfs[j]['Number of pairs']),
 					text =dfs[j]['Number of pairs'].values if show_pairs== True else None,
 					textposition='bottom center') , row=count_row, col=count_cols)
-			fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols)
-			fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols)
-			fig.update_layout(margin=dict(l=5, r=40, t=20, b=20))
+			fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols, automargin = True)
+			fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols, automargin=True)
+			fig.update_layout(autosize=True)
 
 			count_cols += 1
 			if count_cols > 4:
@@ -1039,6 +1132,73 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 				count_row += 1
 		fig.show()
 	execute.on_click(on_variogram)
+
+##############################################################################################################################################	
+
+##############################################################################################################################################
+
+def experimental_function(dataset, X, Y, head, tail,type_c,
+ nlags, lagsize, lineartol,htol, vtol, hband, vband, azimuth, dip, omni, 
+ show_pairs =False,  Z =None, choice =1.0):
+	"""Calculates experimental variogram. Store the results in a global variable `gammapy.return_exp_var`.
+	
+	Args:
+		dataset (DataFrame): data points DataFrame
+		X (str): x coorcinates column name
+		Y (str): y coordinates column name
+		head (str): head variabl
+		tail (str): tail variable
+		ndirections (int): number of directions
+		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+		Z (str, optional): z coordinates column name. Defaults to None.
+		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	"""
+	ndirections = len(nlags)
+
+	if Z == None:
+		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
+		Z = 'Z'			
+
+	dfs = []
+	returning = {'Directions': [azimuth, dip],
+				 'Values' : dfs}
+
+	for i in range(ndirections):
+		dfs.append(_calculate_experimental_function(dataset, X, Y, Z, 
+					type_c[i], lagsize[i], lineartol[i], htol[i], vtol[i], hband[i], vband[i], azimuth[i], dip[i], 
+					nlags[i], head, tail, choice, omni[i]))
+
+
+	size_row = 1 if len(dfs) < 4 else int(math.ceil(len(dfs)/4))
+	size_cols = 4 if len(dfs) >= 4 else int(len(dfs))
+
+	titles = ["Azimuth {} - Dip {}".format(azimuth[j], dip[j]) if omni[j]==False else 'Omni' for j in range(len(dfs))]
+	fig = make_subplots(rows=size_row, cols=size_cols, subplot_titles=titles)
+
+	count_row = 1
+	count_cols = 1
+
+
+	for j, i in enumerate(dfs):
+
+		fig.add_trace(go.Scatter(x=dfs[j]['Average distance'], y=dfs[j]['Spatial continuity'],
+                mode='markers',
+                name='Experimental' ,
+				marker= dict(color =dfs[j]['Number of pairs']),
+				text =dfs[j]['Number of pairs'].values if show_pairs== True else None,
+				textposition='bottom center') , row=count_row, col=count_cols)
+		fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols, automargin = True)
+		fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols, automargin=True)
+		fig.update_layout(autosize=True)
+
+		count_cols += 1
+		if count_cols > 4:
+			count_cols = 1
+			count_row += 1
+	fig.show()
+
+	return returning
+
 
 ##############################################################################################################################################	
 	
