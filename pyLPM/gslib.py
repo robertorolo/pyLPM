@@ -105,29 +105,22 @@ def col_number(file, col):
     return col_names.index(col) + 1 if col is not None else 0
 
 def write_varg_str(varg):
-    if 'nugget' in varg:
-        nst = len(varg) - 1
-        nugget = varg['nugget']
-    else:
-        nst = len(varg)
-        nugget = 0
+    varg_str = '{} {} \n'.format(varg['number_of_structures'], varg['nugget'])
     
-    var_str = '{} {} \n'.format(nst, nugget)
-    
-    for struct in varg:
-        if struct is not 'nugget':
-            if struct is 'spherical':
-                it = 1
-            elif struct is 'exponetial':
-                it = 2
-            elif struct is 'gaussian':
-                it = 3
-
-            new_lines = '{} {} {} {} {} \n {} {} {}'.format(it, varg[struct]['cc'], varg[struct]['a1'], varg[struct]['a2'], varg[struct]['a3'], varg[struct]['r1'], varg[struct]['r2'], varg[struct]['r3'])
-
-            var_str = var_str + new_lines
+    for struct in range(varg['number_of_structures']):
         
-    return var_str
+        if varg['models'][struct] is 'Spherical':
+                it = 1
+        elif varg['models'][struct] is 'Exponetial':
+                it = 2
+        elif varg['models'][struct] is 'Gaussian':
+                it = 3
+        
+        new_line = '{} {} {} {} {} \n {} {} {} \n'.format(it, varg['contribution'][struct], varg['rotation_reference'][0], varg['rotation_reference'][1], varg['rotation_reference'][2], varg['ranges'][struct][0], varg['ranges'][struct][1], varg['ranges'][struct][2])
+
+        varg_str = varg_str + new_line
+
+    return varg_str
 
 #############################################################################################################
 
