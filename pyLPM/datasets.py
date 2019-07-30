@@ -11,18 +11,16 @@ import os
 import sys 
 import ipywidgets as widgets
 
-
-
-
-
-sys.path.insert(0, os.path.abspath('.'))
+#defining datasets folder inside package folder
+global DATA_PATH
+DATA_PATH = pkg_resources.resource_filename('pyLPM', 'datasets/')
 
 def dataset_list():
 	return ['Walker_Lake']
 
 def dataset(dataset_name):
 	if dataset_name == 'Walker_Lake':
-		X, Y, Cu, Au = np.loadtxt("pyLPM/datasets/Walker_Lake.txt" , skiprows = 6, unpack = True)
+		X, Y, Cu, Au = np.loadtxt(DATA_PATH+"Walker_Lake.txt" , skiprows = 6, unpack = True)
 		df = pd.DataFrame(np.array([X,Y,Cu,Au]).T, columns =['X', 'Y', 'Cu', 'Au'])
 		return df
 
@@ -107,12 +105,3 @@ def _graphs(local, dataset_name):
 	    margin=dict(r=10, t=25, b=40, l=60))
 
 		fig.show()
-	
-
-
-
-
-
- 
-
-HTML('<a href="https://en.wikipedia.org/wiki/Walker_Lake_(Nevada)">link</a>')

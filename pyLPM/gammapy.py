@@ -777,7 +777,7 @@ def interactive_modelling(experimental_dataframe, number_of_structures, show_pai
 		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
 	"""
 
-
+	warnings.filterwarnings('ignore')
 
 	azimuths = experimental_dataframe['Directions'][0]
 	dips = experimental_dataframe['Directions'][1] 
@@ -867,7 +867,7 @@ def modelling(experimental_dict, rotation_max, rotation_med, rotation_min,
 		dict: variogram model DataFrame
 	"""
 
-
+	warnings.filterwarnings('ignore')
 
 	azimuths = experimental_dict['Directions'][0]
 	dips = experimental_dict['Directions'][1]
@@ -1047,6 +1047,8 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	"""
 
+	warnings.filterwarnings('ignore')
+	
 	global return_values_from_exp_var 
 
 	if Z == None:
@@ -1188,6 +1190,8 @@ def experimental(dataset, X, Y, head, tail,type_c,
 	Returns:
 		dict: experimental variogram DataFrame
 	"""
+
+	warnings.filterwarnings('ignore')
 
 	ndirections = len(nlags)
 

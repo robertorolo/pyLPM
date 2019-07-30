@@ -2,8 +2,22 @@ import subprocess
 import numpy as np
 import pandas as pd
 from pyLPM import plots
+import pkg_resources
+import os
 
 #############################################################################################################
+
+#creating a global tem variable
+global temp_dir_str
+temp_dir_str = os.getcwd() + '\\pyLPM_data\\'
+
+#creating dir
+if not os.path.exists(temp_dir_str): 
+    os.mkdir(temp_dir_str)
+
+#defining gslib90 folder inside package folder
+global DATA_PATH
+DATA_PATH = pkg_resources.resource_filename('pyLPM', 'gslib90/')
 
 def call_program(program, parfile, usewine=False):
     """Run a GSLib program
@@ -32,6 +46,7 @@ def write_GeoEAS(df,dh,x,y,z,vars=[]):
         z (str): z column name
         vars (list, optional): list of string with variables names. Defaults to [].
     """
+
     df.replace(float('nan'),-999,inplace=True)
     columns = []
     if dh != None:
@@ -49,7 +64,7 @@ def write_GeoEAS(df,dh,x,y,z,vars=[]):
         data=data + col+'\n'
     values = df[columns].to_string(header=False, index=False)
     data= data + values+'\n'
-    f = open('pyLPM/gslib90/tmp/tmp.dat', 'w')
+    f = open(temp_dir_str+'tmp.dat', 'w')
     f.write(data)
     f.close()
 
@@ -124,7 +139,7 @@ def write_varg_str(varg):
 
 #############################################################################################################
 
-def declus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, summary_file='pyLPM/gslib90/tmp/tmpsum.dat', output_file='pyLPM/gslib90/tmp/tmpfile.dat', x_anis=1, z_anis=1, n_cell=10, min_size=1, max_size=20, keep_min = True, number_offsets=4, usewine=False):
+def declus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, x_anis=1, z_anis=1, n_cell=10, min_size=1, max_size=20, keep_min = True, number_offsets=4, usewine=False):
     """cell declustering algortihm. This function shows the declustering reults summary and writes weights to the DataFrame.
     
     Args:
@@ -166,15 +181,15 @@ START OF PARAMETERS:
 {noff}                           -number of origin offsets
 '''
     map_dict = {
-        'datafile':'pyLPM/gslib90/tmp/tmp.dat',
-        'x':col_number('pyLPM/gslib90/tmp/tmp.dat', x),
-        'y':col_number('pyLPM/gslib90/tmp/tmp.dat', y),
-        'z':col_number('pyLPM/gslib90/tmp/tmp.dat', z),
-        'var':col_number('pyLPM/gslib90/tmp/tmp.dat', var),
+        'datafile':temp_dir_str+'tmp.dat',
+        'x':col_number(temp_dir_str+'tmp.dat', x),
+        'y':col_number(temp_dir_str+'tmp.dat', y),
+        'z':col_number(temp_dir_str+'tmp.dat', z),
+        'var':col_number(temp_dir_str+'tmp.dat', var),
         'tmin':str(tmin),
         'tmax':str(tmax),
-        'sum':summary_file,
-        'out':output_file,
+        'sum':temp_dir_str+'tmpsum.dat',
+        'out':temp_dir_str+'tmpfile.dat',
         'xanis':str(x_anis),
         'zanis':str(z_anis),
         'ncell':str(n_cell),
@@ -185,20 +200,20 @@ START OF PARAMETERS:
     }
 
     formatted_str = decluspar.format(**map_dict)
-    parfile = 'pyLPM/gslib90/tmp/partmp.par'
+    parfile = temp_dir_str+'partmp.par'
     f = open(parfile, 'w')
     f.write(formatted_str)
     f.close()
-    program = "pyLPM/gslib90/declus.exe"
+    program = DATA_PATH+"declus.exe"
 
     call_program(program, parfile, usewine)
 
-    df1 = read_GeoEAS(summary_file)
+    df1 = read_GeoEAS(temp_dir_str+'tmpsum.dat')
     plots.cell_declus_sum(df1['Cell Size'],df1['Declustered Mean'])
-    df2 = read_GeoEAS(output_file)
+    df2 = read_GeoEAS(temp_dir_str+'tmpfile.dat')
     df['Declustering Weight'] = df2['Declustering Weight']
 
-def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oct, search_radius, search_ang = [0,0,0], discretization = [5,5,1], krig_type='OK', sk_mean = 0, tmin=-1.0e21, tmax=1.0e21, option='grid', debug_level=0, debug_file='pyLPM/gslib90/tmp/debug.out', output_file='pyLPM/gslib90/tmp/output.out',usewine=False):
+def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oct, search_radius, search_ang = [0,0,0], discretization = [5,5,1], krig_type='OK', sk_mean = 0, tmin=-1.0e21, tmax=1.0e21, option='grid', debug_level=0, usewine=False):
     """Kriging algorithm. This function will show cross validation results if ``option = 'cross'`` or ``option = 'jackknife'`` or it will return estimated values and variace arrays if ``option = 'grid'``. 
     
     Args:
@@ -258,18 +273,18 @@ extdrift.dat                     -gridded file with drift/mean
 {varg}'''
 
     map_dict = {
-        'datafile':'pyLPM/gslib90/tmp/tmp.dat',
-        'dh': col_number('pyLPM/gslib90/tmp/tmp.dat', dh),
-        'x': col_number('pyLPM/gslib90/tmp/tmp.dat', x),
-        'y': col_number('pyLPM/gslib90/tmp/tmp.dat', y),
-        'z':col_number('pyLPM/gslib90/tmp/tmp.dat', z),
-        'var':col_number('pyLPM/gslib90/tmp/tmp.dat', var),
+        'datafile':temp_dir_str+'tmp.dat',
+        'dh': col_number(temp_dir_str+'tmp.dat', dh),
+        'x': col_number(temp_dir_str+'tmp.dat', x),
+        'y': col_number(temp_dir_str+'tmp.dat', y),
+        'z':col_number(temp_dir_str+'tmp.dat', z),
+        'var':col_number(temp_dir_str+'tmp.dat', var),
         'tmin':str(tmin),
         'tmax':str(tmax),
         'option': 0 if option is 'grid' else 1 if option is 'cross' else 2,
         'debug':debug_level,
-        'debugout':debug_file,
-        'kt3dout':output_file,
+        'debugout':temp_dir_str+'debug.out',
+        'kt3dout':temp_dir_str+'output.out',
         'nx':grid['nx'],
         'ny':grid['ny'],
         'nz':grid['nz'],
@@ -297,22 +312,22 @@ extdrift.dat                     -gridded file with drift/mean
     }
 
     formatted_str = kt3dpar.format(**map_dict)
-    parfile = 'pyLPM/gslib90/tmp/partmp.par'
+    parfile = temp_dir_str+'partmp.par'
     f = open(parfile, 'w')
     f.write(formatted_str)
     f.close()
-    program = "pyLPM/gslib90/kt3d.exe"
+    program = DATA_PATH+"kt3d.exe"
 
     call_program(program, parfile, usewine)
 
     if option is 'grid':
 
-        df1 = read_GeoEAS(output_file)
+        df1 = read_GeoEAS(temp_dir_str+'output.out')
         return df1['Estimate'], df1['EstimationVariance']
 
     if option is 'cross' or option is 'jackknife':
 
-        df1 = read_GeoEAS(output_file)
+        df1 = read_GeoEAS(temp_dir_str+'output.out')
         real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
         plots.xval(real, estimate, error, pointsize=8, figsize=(500,900))
 
