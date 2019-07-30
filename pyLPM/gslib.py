@@ -233,7 +233,7 @@ def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oc
         tmin (float, optional): minimum trimming limit. Defaults to -1.0e21.
         tmax (float, optional): maximum trimming limit. Defaults to 1.0e21.
         option (str, optional): cross validation 'cross', jackknife 'jackknife' or estimation 'grid' flag . Defaults to 'grid'.
-        debug_level (int, optional): debug level. Defaults to 0.
+        debug_level (int, optional): debug level. Defaults to 0. If 2 plots the negative weights histogram.
         usewine (bool, optional): use wine flag. Defaults to False.
     """
 
@@ -316,6 +316,36 @@ extdrift.dat                     -gridded file with drift/mean
 
     call_program(program, parfile, usewine)
 
+    if debug_level == 2:
+    
+        f = open(temp_dir_str+'debug.out', 'r')
+        lines=f.readlines()
+
+        begin = []
+        end = []
+        for idx, line in enumerate(lines):
+            if 'BLOCK EST: x,y,z,vr,wt' in line:
+                idxi = idx + 1
+                begin.append(idxi)
+                #print(idxi, lines[idxi])
+            if 'estimate' in line:
+                idxf = idx -1
+                end.append(idxf)
+                #print(idxf, lines[idxf])
+
+        wts = []
+        for b,e in zip(begin, end):
+            slicing = lines[b:e+1]
+            for i in slicing:
+                wts.append(float(i.split()[4]))
+
+        wts = np.array(wts)
+        mask_negative = wts < 0
+        neg_wts = wts[mask_negative]
+        total = len(wts)
+
+        plots.histogram(data=neg_wts,title='Negative weights of total {}'.format(total), n_bins=8)
+
     if option is 'grid':
 
         df1 = read_GeoEAS(temp_dir_str+'output.out')
@@ -326,5 +356,8 @@ extdrift.dat                     -gridded file with drift/mean
         df1 = read_GeoEAS(temp_dir_str+'output.out')
         real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
         plots.xval(real, estimate, error, pointsize=8, figsize=(500,900))
+
+
+
 
 

@@ -10,6 +10,7 @@ from IPython.core.display import HTML
 import os 
 import sys 
 import ipywidgets as widgets
+import pkg_resources
 
 #defining datasets folder inside package folder
 global DATA_PATH
@@ -78,7 +79,7 @@ def _graphs(local, dataset_name):
 
 		df = dataset(dataset_name)
 
-		display(df.describe())
+		#display(df.describe())
 
 		fig = make_subplots(rows=2, cols=2,
 			column_widths=[0.6, 0.4],row_heights=[0.4, 0.6],
