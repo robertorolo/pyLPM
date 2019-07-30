@@ -8,4 +8,5 @@ The software is composed by five modules:
 * **Utilities** is where the user will find functions to make the workflow easy and fast.
 * **Plots** is a rich plotting functions library, based on plotly. All the plots are interactive.
 
-`Read the docs <https://pylpm.readthedocs.io/en/latest/index.html>`_
+A complete documentation with usage examples can be found at [Read the docs](https://pylpm.readthedocs.io/en/latest/index.html)
+
