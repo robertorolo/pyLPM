@@ -150,8 +150,6 @@ def declus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, x_anis=1, z_anis=1, n_ce
         var (str): variable column name
         tmin (float, optional): minimum triming limit. Defaults to -1.0e21.
         tmax (float, optional): maximum triming limit. Defaults to 1.0e21.
-        summary_file (str, optional): output summary file path. Defaults to 'pyLPM/gslib90/tmp/tmpsum.dat'.
-        output_file (str, optional): output file path. Defaults to 'pyLPM/gslib90/tmp/tmpfile.dat'.
         x_anis (float, optional):  the anisotropy factors to consider rectangular cells. The cell size in the x direction is multiplied by these factors to get the cell size in the y and z directions, e.g., if a cell size of 10 is being considered and anisy2 and anisz3 then the cell size in the y direction is 20 and the cell size in the z direction is 30.. Defaults to 1.
         z_anis (float, optional): anisotropy factor. Defaults to 1.
         n_cell (int, optional): number of cells. Defaults to 10.
@@ -236,8 +234,6 @@ def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oc
         tmax (float, optional): maximum trimming limit. Defaults to 1.0e21.
         option (str, optional): cross validation 'cross', jackknife 'jackknife' or estimation 'grid' flag . Defaults to 'grid'.
         debug_level (int, optional): debug level. Defaults to 0.
-        debug_file (str, optional): debug file path. Defaults to 'pyLPM/gslib90/tmp/debug.out'.
-        output_file (str, optional): output file path. Defaults to 'pyLPM/gslib90/tmp/output.out'.
         usewine (bool, optional): use wine flag. Defaults to False.
     """
 
