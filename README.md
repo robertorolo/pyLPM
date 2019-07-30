@@ -1,3 +1,5 @@
+![logo](docs/source/figs/logo.png)
+
 pyLPM is a free and open source python geostatistical library intended to be used in a jupyter notebook.
 
 The software is composed by five modules:
