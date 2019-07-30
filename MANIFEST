@@ -49,9 +49,3 @@ pyLPM\gslib90\trans.exe
 pyLPM\gslib90\vargplt.exe
 pyLPM\gslib90\varmap.exe
 pyLPM\gslib90\vmodel.exe
-pyLPM\gslib90\tmp\debug.out
-pyLPM\gslib90\tmp\output.out
-pyLPM\gslib90\tmp\partmp.par
-pyLPM\gslib90\tmp\tmp.dat
-pyLPM\gslib90\tmp\tmpfile.dat
-pyLPM\gslib90\tmp\tmpsum.dat
