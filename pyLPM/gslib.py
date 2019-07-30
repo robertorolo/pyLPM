@@ -10,6 +10,7 @@ import os
 #creating a global tem variable
 global temp_dir_str
 temp_dir_str = os.getcwd() + '\\pyLPM_data\\'
+temp_dir_str.replace('\\','/')
 
 #creating dir
 if not os.path.exists(temp_dir_str): 
