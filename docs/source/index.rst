@@ -21,7 +21,7 @@ The software is composed by five modules:
 
    Installation.rst
    jupyter.ipynb
-   load_data.rst
+   pandas.ipynb
 
 .. toctree::
    :maxdepth: 2
