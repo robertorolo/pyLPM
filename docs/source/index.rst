@@ -19,9 +19,13 @@ The software is composed by five modules:
    :maxdepth: 2
    :caption: Introduction:
 
+   Installation.rst
+   load_data.rst
+
 .. toctree::
    :maxdepth: 2
    :caption: Modules:
+   datasets.rst
    gslib.rst
    geostatalgo.rst
    variogram.rst
