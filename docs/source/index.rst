@@ -20,6 +20,7 @@ The software is composed by five modules:
    :caption: Introduction:
 
    Installation.rst
+   jupyter.ipynb
    load_data.rst
 
 .. toctree::
@@ -38,7 +39,6 @@ The software is composed by five modules:
    :caption: Demos:
    
    demo wl.ipynb
-
 
 
 Indices and tables
