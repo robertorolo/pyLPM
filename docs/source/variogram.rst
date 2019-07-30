@@ -1,7 +1,7 @@
 Variography
 =============
 
-This module houses tools for spatial continuity analysis and variogram calculation and modeling.
+This module houses tools for spatial continuity analysis and variogram calculation and modeling. All interactive functions opens an interactive parameters input widget, non interactive versions are usefull for scripting your workflow.
 
 .. currentmodule:: pyLPM.gammapy
 
