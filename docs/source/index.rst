@@ -17,13 +17,17 @@ The software is composed by five modules:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Introduction:
 
+
+   :caption: Modules
    gslib.rst
    geostatalgo.rst
    variogram.rst
    utils.rst
    plots.rst
+
+   :caption: Demos
    demo wl.ipynb
 
 
