@@ -1,7 +1,9 @@
 Instalaion
 ==============
 
-djioijdcojzdcojzoijc aiodjaoisjdoi hidhfisudhfisduf
+.. image:: figs/anacondalogo.png
+    :width: 400px
+    :align: center
 
 como no exemplo abaixo.
 

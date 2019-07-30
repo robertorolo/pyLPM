@@ -21,7 +21,7 @@ The software is composed by five modules:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Modules
+   :caption: Modules:
    gslib.rst
    geostatalgo.rst
    variogram.rst
@@ -30,7 +30,7 @@ The software is composed by five modules:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Demos
+   :caption: Demos:
    demo wl.ipynb
 
 
