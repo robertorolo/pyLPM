@@ -124,7 +124,7 @@ html_theme_options = {
     'titles_only': False
 }
 
-html_logo = "figs/logo.png"
+html_logo = "figs/logo_white.png"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
