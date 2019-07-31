@@ -1,4 +1,9 @@
+"""Summary
 
+Attributes:
+    DATA_PATH (TYPE): Description
+    temp_dir_str (TYPE): Description
+"""
 from __future__ import print_function
 from ipywidgets import interact, interactive, fixed, interact_manual
 from ipywidgets import GridspecLayout
@@ -48,9 +53,9 @@ def call_program(program, parfile, usewine=False):
 		"""Run a GSLib program
 		
 		Args:
-				program (str): gslib program path
-				parfile (str): parameter file file path
-				usewine (bool, optional): use wine flag. Defaults to False.
+		    program (str): gslib program path
+		    parfile (str): parameter file file path
+		    usewine (bool, optional): use wine flag. Defaults to False.
 		"""
 		if usewine == True:
 				p = subprocess.Popen(['wine', program, parfile], stdout=subprocess.PIPE)
@@ -64,12 +69,12 @@ def write_GeoEAS(df,dh,x,y,z,vars=[]):
 		"""Write GeoEAS file from a DataFrame
 		
 		Args:
-				df (DataFrame): data DataFrame
-				dh (str): dh column name
-				x (str): x column name
-				y (str): y column name
-				z (str): z column name
-				vars (list, optional): list of string with variables names. Defaults to [].
+		    df (DataFrame): data DataFrame
+		    dh (str): dh column name
+		    x (str): x column name
+		    y (str): y column name
+		    z (str): z column name
+		    vars (list, optional): list of string with variables names. Defaults to [].
 		"""
 
 		df.replace(float('nan'),-999,inplace=True)
@@ -97,10 +102,10 @@ def read_GeoEAS(file):
 		"""Read GeoEAS file into a DataFrame
 		
 		Args:
-				file (str): file path
+		    file (str): file path
 		
 		Returns:
-				DataFrame: DataFrame with data
+		    DataFrame: DataFrame with data
 		"""
 		f = open(file, 'r')
 		col_names = []
@@ -125,11 +130,11 @@ def col_number(file, col):
 		"""Returns the column number from ist name on a GeoEAS file
 		
 		Args:
-				file (str): file path
-				col (str): column name
+		    file (str): file path
+		    col (str): column name
 		
 		Returns:
-				int: column number
+		    int: column number
 		"""
 		f = open(file, 'r')
 		col_names = []
@@ -145,6 +150,14 @@ def col_number(file, col):
 		return col_names.index(col) + 1 if col is not None else 0
 
 def write_varg_str(varg):
+		"""Summary
+		
+		Args:
+		    varg (TYPE): Description
+		
+		Returns:
+		    TYPE: Description
+		"""
 		varg_str = '{} {} \n'.format(varg['number_of_structures'], varg['nugget'])
 		
 		for struct in range(varg['number_of_structures']):
@@ -168,21 +181,21 @@ def declus(df, x, y, z, var, tmin=-1.0e21, tmax=1.0e21, x_anis=1, z_anis=1, n_ce
 		"""cell declustering algortihm. This function shows the declustering reults summary and writes weights to the DataFrame.
 		
 		Args:
-				df (DataFrame): points data DataFrame
-				x (str): x coordinates column name
-				y (str): y coordinates column name
-				z (str): z coordinates column name
-				var (str): variable column name
-				tmin (float, optional): minimum triming limit. Defaults to -1.0e21.
-				tmax (float, optional): maximum triming limit. Defaults to 1.0e21.
-				x_anis (float, optional):  the anisotropy factors to consider rectangular cells. The cell size in the x direction is multiplied by these factors to get the cell size in the y and z directions, e.g., if a cell size of 10 is being considered and anisy2 and anisz3 then the cell size in the y direction is 20 and the cell size in the z direction is 30.. Defaults to 1.
-				z_anis (float, optional): anisotropy factor. Defaults to 1.
-				n_cell (int, optional): number of cells. Defaults to 10.
-				min_size (float, optional): minimum size. Defaults to 1.
-				max_size (float, optional): maximum size. Defaults to 20.
-				keep_min (bool, optional): an boolean flag that specifies whether a minimum mean value (True) or maximum mean value (False) is being looked for. Defaults to True.
-				number_offsets (int, optional): the number of origin offsets. Each of the ncell cell sizes are considered with noff different original starting points. This avoids erratic results caused by extreme values falling into specific cells. A good number is 4 in 2-D and 8 in 3-D. A short description of the program. Defaults to 4.
-				usewine (bool, optional): use wine flag. Defaults to False.
+		    df (DataFrame): points data DataFrame
+		    x (str): x coordinates column name
+		    y (str): y coordinates column name
+		    z (str): z coordinates column name
+		    var (str): variable column name
+		    tmin (float, optional): minimum triming limit. Defaults to -1.0e21.
+		    tmax (float, optional): maximum triming limit. Defaults to 1.0e21.
+		    x_anis (float, optional): the anisotropy factors to consider rectangular cells. The cell size in the x direction is multiplied by these factors to get the cell size in the y and z directions, e.g., if a cell size of 10 is being considered and anisy2 and anisz3 then the cell size in the y direction is 20 and the cell size in the z direction is 30.. Defaults to 1.
+		    z_anis (float, optional): anisotropy factor. Defaults to 1.
+		    n_cell (int, optional): number of cells. Defaults to 10.
+		    min_size (float, optional): minimum size. Defaults to 1.
+		    max_size (float, optional): maximum size. Defaults to 20.
+		    keep_min (bool, optional): an boolean flag that specifies whether a minimum mean value (True) or maximum mean value (False) is being looked for. Defaults to True.
+		    number_offsets (int, optional): the number of origin offsets. Each of the ncell cell sizes are considered with noff different original starting points. This avoids erratic results caused by extreme values falling into specific cells. A good number is 4 in 2-D and 8 in 3-D. A short description of the program. Defaults to 4.
+		    usewine (bool, optional): use wine flag. Defaults to False.
 		"""
 
 		write_GeoEAS(df=df,dh=None,x=x,y=y,z=z,vars=[var])
@@ -240,26 +253,30 @@ def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oc
 		"""Kriging algorithm. This function will show cross validation results if ``option = 'cross'`` or ``option = 'jackknife'`` or it will return estimated values and variace arrays if ``option = 'grid'``. 
 		
 		Args:
-				df (DataFrame): points data DataFrame
-				x (str): x coordinates column name
-				y (str): y coordinates column name
-				z (str): z coordinates column name
-				var (str): variable column name
-				grid (dict): grid definitions dictionary
-				variogram (dict): variogram dictionary
-				min_samples (int): minimum samples
-				max_samples (int): maximum number of samples
-				max_oct (int): maximum number of samples per octant
-				search_radius (list): range1, ramge2, range3 values list
-				search_ang (list, optional): azimuth, dip, rake values list. Defaults to [0,0,0].
-				discretization (list, optional): block discretization. Defaults to [5,5,1].
-				krig_type (str, optional): 'SK' or 'OK' flag. Defaults to 'OK'.
-				sk_mean (float, optional): simple kriging mean. Defaults to 0.
-				tmin (float, optional): minimum trimming limit. Defaults to -1.0e21.
-				tmax (float, optional): maximum trimming limit. Defaults to 1.0e21.
-				option (str, optional): cross validation 'cross', jackknife 'jackknife' or estimation 'grid' flag . Defaults to 'grid'.
-				debug_level (int, optional): debug level. Defaults to 0.
-				usewine (bool, optional): use wine flag. Defaults to False.
+		    df (DataFrame): points data DataFrame
+		    dh (TYPE): Description
+		    x (str): x coordinates column name
+		    y (str): y coordinates column name
+		    z (str): z coordinates column name
+		    var (str): variable column name
+		    grid (dict): grid definitions dictionary
+		    variogram (dict): variogram dictionary
+		    min_samples (int): minimum samples
+		    max_samples (int): maximum number of samples
+		    max_oct (int): maximum number of samples per octant
+		    search_radius (list): range1, ramge2, range3 values list
+		    search_ang (list, optional): azimuth, dip, rake values list. Defaults to [0,0,0].
+		    discretization (list, optional): block discretization. Defaults to [5,5,1].
+		    krig_type (str, optional): 'SK' or 'OK' flag. Defaults to 'OK'.
+		    sk_mean (float, optional): simple kriging mean. Defaults to 0.
+		    tmin (float, optional): minimum trimming limit. Defaults to -1.0e21.
+		    tmax (float, optional): maximum trimming limit. Defaults to 1.0e21.
+		    option (str, optional): cross validation 'cross', jackknife 'jackknife' or estimation 'grid' flag . Defaults to 'grid'.
+		    debug_level (int, optional): debug level. Defaults to 0.
+		    usewine (bool, optional): use wine flag. Defaults to False.
+		
+		Returns:
+		    TYPE: Description
 		"""
 
 		write_GeoEAS(df=df,dh=dh,x=x,y=y,z=z,vars=[var])
@@ -358,13 +375,58 @@ extdrift.dat                     -gridded file with drift/mean
 ##########################################################################################################################################################3
 
 
-def gamv(df,  x='x', y='y', z='z', var_h ='V', var_tail = 'V',  nlags =10, lagdist=10, lagtol= 5, 
+def gamv(df,  x='x', y='y', z='z', var_h ='V', var_tail = 'V',  nlags:int =10, lagdist=10, lagtol= 5, 
 	ndirections=3, azm = [0,0,0], atol = [22,22,22], bandh =[5,5,5],
 	dip = [0,0,0], dtol =[22,22,22], bandv = [5,5,5], standardize = 0, 
 	variogram_type = 1, tmin =  -999, tmax = 999, usewine = False):
-
 	
+	"""Calculate experimental functions using gamv 
+	
+	Args:
+	    df (pandas.DataFrame): DataFrame containing all spatial information
+	    x (str): Label for the X coordinates 
+	    y (str, optional): Label for the Y coordinates 
+	    z (str, optional): Label for the Z coordinates 
+	    var_h (str, optional): Label for the variable at the head of the distance vector
+	    var_tail (str, optional): Label for the variable at the tail of the distance vector
+	    nlags (int, optional): Number of lags for the experimental variogram
+	    lagdist (int, optional): Size of the lag for the experimental variogram
+	    lagtol (int, optional): Linear tolerance for the experimental variogram 
+	    ndirections (int, optional): Number of directions to calculate
+	    azm (list, optional): List of azimuth angles in degrees
+	    atol (list, optional): List of horizontal angular tolerances in degrees
+	    bandh (list, optional): List of horizontal band width 
+	    dip (list, optional): List of dip angles in degrees 
+	    dtol (list, optional): List of vertical angular tolerances in degrees
+	    bandv (list, optional): List of vertical band width 
+	    standardize (int, optional): Standardize variables 0- No, 1- Yes 
+	    variogram_type (int, optional): Variogram experimental function 
+
+		 variogram_type 
+		 1 = traditional semivariogram
+     2 = traditional cross semivariogram
+     3 = covariance
+     4 = correlogram
+     5 = general relative semivariogram
+     6 = pairwise relative semivariogram
+     7 = semivariogram of logarithms
+     8 = semimadogram
+     9 = indicator semivariogram - continuous
+     10= indicator semivariogram - categorical
+
+	    tmin (TYPE, optional): Minimum trimming limits 
+	    tmax (int, optional): Maximum trimming limits 
+	    usewine (bool, optional): Option to use wine for Linux users
+	
+	Returns:
+	    TYPE: Description
+	"""
+
+	# Write gslib file on directory 
+
 	write_GeoEAS(df=df,dh=None,x=x,y=y,z=z,vars=[var_h, var_tail])
+
+	# Define the variogram directions strings for the file parameter
 
 	directions = ""
 	for i in range(ndirections):
@@ -372,6 +434,8 @@ def gamv(df,  x='x', y='y', z='z', var_h ='V', var_tail = 'V',  nlags =10, lagdi
 			directions += "{} {} {} {} {} {} -azm,atol,bandh,dip,dtol,bandv".format(str(azm[i]), str(atol[i]), str(bandh[i]), str(dip[i]), str(dtol[i]), str(bandv[i]))
 		else:
 			directions += "{} {} {} {} {} {} -azm,atol,bandh,dip,dtol,bandv \n".format(str(azm[i]), str(atol[i]), str(bandh[i]), str(dip[i]), str(dtol[i]), str(bandv[i]))
+
+	# Define the file parameter 
 
 	gamvpar = '''
 								Parameters for GAMV
@@ -392,14 +456,7 @@ START OF PARAMETERS:
 1                                 -number of variograms
 1   2   {variogram_type}                         -tail var., head var., variogram type
 '''
-
-
-
-
 	string_c = temp_dir_str.replace("\\", "/")
-				 
-
-
 	map_dict = {'datafile':string_c+'tmp.dat',
 				'x': col_number(string_c +'tmp.dat', x),
 				'y': col_number(string_c +'tmp.dat', y),
@@ -420,14 +477,22 @@ START OF PARAMETERS:
 				'variogram_type': variogram_type}
 
 
+	# Write the gslib par file 
+
 	formatted_str = gamvpar.format(**map_dict)
 	parfile = temp_dir_str+'gamv.par'
 	f = open(parfile, 'w')
 	f.write(formatted_str)
 	f.close()
+
+	# Run the gamv executable 
+
 	program = DATA_PATH+"gamv.exe"
 	call_program(program, parfile, usewine)
-	myfile = open(temp_dir_str+'gamv.out', 'r')
+
+	# Open and read experimental variogram output 
+
+	myfile = open(temp_dir_str+'output.out', 'r')
 	data=myfile.readlines()
 	count = 0
 	dfs =[]
@@ -436,70 +501,37 @@ START OF PARAMETERS:
 	number_of_pairs =[]
 	variogram = [] 
 	number = []
-	for i, j in enumerate(data):
-		if count > 0.0:
-			splited = j.split()
-			distance.append(splited[1])
-			number_of_pairs.append(splited[3])
-			variogram.append(splited[2])
-			number.append(splited[0])
-
-		if count == (nlags+2):
-	
+	count = 0 
+	list_of_headers = ['Semivariogram', 'Cross', 'Covariance','Correlogram', 
+	'Relative', 'General', 'Pairwise', 'Variogram', 'Semimadogram', 'Indicator' ]
+	for i in range(len(data)):
+		splited = data[i].split()
+		if (splited[0] not in list_of_headers):
+			distance.append(float(splited[1]))
+			number_of_pairs.append(int(splited[3]))
+			variogram.append(float(splited[2]))
+			number.append(int(splited[0]))
+		if (splited[0] in list_of_headers and i > 0) or (i == (len(data) -1)):
 			df = pd.DataFrame(np.array([distance, variogram, number_of_pairs]).T, columns =['Average distance', 'Spatial continuity', 'Number of pairs'])
 			dfs.append(df)
-
-			count = -1.0 
 			number  =[] 
 			distance = []
 			number_of_pairs =[]
 			variogram = [] 
-		count += 1
 
-	if var_h != var_tail:
-		dfs = dfs[3:6][:]
-
-	size_row = 1 if len(dfs) < 4 else int(math.ceil(len(dfs)/4))
-	size_cols = 4 if len(dfs) >= 4 else int(len(dfs))
-
-	titles = ["Azimuth {} - Dip {}".format(azm[j], dip[j]) for j in range(len(dfs))]
-	fig = make_subplots(rows=size_row, cols=size_cols, subplot_titles=titles)
-
-	count_row = 1
-	count_cols = 1
-
-
-	for j, i in enumerate(dfs):
-
-		fig.add_trace(go.Scatter(x=dfs[j]['Average distance'], y=dfs[j]['Spatial continuity'],
-                mode='markers',
-                name='Experimental' ,
-				marker= dict(color =dfs[j]['Number of pairs'].astype(np.float)),
-				text =dfs[j]['Number of pairs'].values,
-				textposition='bottom center') , row=count_row, col=count_cols)
-		fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols, automargin = True)
-		fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols, automargin=True)
-		fig.update_layout(autosize=True)
-
-		count_cols += 1
-		if count_cols > 4:
-			count_cols = 1
-			count_row += 1
-	fig.show()
-
+	print(dfs)
 	
-	return (dfs)
 
+	# If cross experimental variograms, only use the cross variograms 
 
-	'''
-	if option is 'grid':
+	# Plot the experimental variogram functions 
 
-		df1 = read_GeoEAS(temp_dir_str+'output.out')
-		return df1['Estimate'], df1['EstimationVariance']
+	plots.plot_experimental_variogram(dfs, azm, dip)
 
-	if option is 'cross' or option is 'jackknife':
+	# Define the returning dictionary containing the experimental values 
+	returning = {'Directions': [azm, dip],
+				 'Values' : dfs}
 
-		df1 = read_GeoEAS(temp_dir_str+'output.out')
-		real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
-		plots.xval(real, estimate, error, pointsize=8, figsize=(500,900))
-	'''
+	return returning 
+
+##########################################################################################################################################################

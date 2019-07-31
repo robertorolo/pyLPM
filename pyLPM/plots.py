@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from matplotlib import colors,ticker,cm 
 import matplotlib
+from sklearn import datasets, linear_model
 
 
 
@@ -25,7 +26,89 @@ from scipy.stats import gaussian_kde
 from scipy import stats
 import pandas as pd
 from pyLPM import utils 
+import math
 
+
+#############################################################################################################
+
+def plot_experimental_variogram(dfs, azm,dip):
+    size_row = 1 if len(azm) < 4 else int(math.ceil(len(azm)/4))
+    size_cols = 4 if len(azm) >= 4 else int(len(azm))
+
+    titles = ["Azimuth {} - Dip {}".format(azm[j], dip[j]) for j in range(len(azm))]
+    fig = make_subplots(rows=size_row, cols=size_cols, subplot_titles=titles)
+
+    count_row = 1
+    count_cols = 1
+
+
+    for j, i in enumerate(dfs):
+
+        fig.add_trace(go.Scatter(x=i['Average distance'], y=i['Spatial continuity'],
+                mode='markers',
+                name='Experimental' ,
+                marker= dict(color =i['Number of pairs']),
+                text =i['Number of pairs'],
+                textposition='bottom center') , row=count_row, col=count_cols)
+        fig.update_xaxes(title_text="Distance", row=count_row, col=count_cols, automargin = True)
+        fig.update_yaxes(title_text="Variogram", row=count_row, col=count_cols, automargin=True)
+        fig.update_layout(autosize=True)
+
+        count_cols += 1
+        if count_cols > 4:
+            count_cols = 1
+            count_row += 1
+    fig.show()
+
+    
+    return (dfs)
+
+#############################################################################################################
+
+def plot_hscat(store, lagsize, lagmultiply):
+    size_row = 1 if len(lagmultiply) < 4 else int(math.ceil(len(lagmultiply)/4))
+    size_cols = 4 if len(lagmultiply) >= 4 else int(len(lagmultiply))
+
+    distance =[i*lagsize for i in lagmultiply]
+
+   
+    fig = go.Figure()
+    statitics = ""
+
+    annotations = []
+    for j, i in enumerate(store):
+
+         # Create linear regression object
+
+         if len(i[0]) != 0:
+             slope, intercept, r_value, p_value, std_err = stats.linregress(i[0],i[1])
+
+             statitics  = statitics +''' rho ({}) / distance {}  <br />'''.format(str(np.round(r_value,2)), str(distance[j]))
+
+             x_val = np.linspace(0, np.max(i[0]), 100)
+             y_val = slope*x_val + intercept
+         else:
+            x_val = []
+            y_val =[]
+
+         fig.add_trace(go.Scatter(x=i[0], y=i[1],
+                mode='markers',
+                name='Hscatter - distance {}'.format(str(distance[j]))))
+         fig.add_trace(go.Scatter(x=x_val, y=y_val,
+                mode= 'lines',
+                name = 'Regression - distance {}'.format(str(distance[j])),
+                line= dict(width=3)))
+    fig.layout = {
+        'title':'Hscatter plots',
+        'xaxis':{'title':'Z(x)','zeroline':True,'autorange':True},
+        'yaxis':{'title':'Z(x+h)','zeroline':True,'autorange':True},
+        'annotations':[{'text':statitics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
+        }
+       
+    fig['layout'].update(annotations =annotations)
+    fig.show()
+
+    
 #############################################################################################################
 
 def weighted_avg_and_var(values, weights):
