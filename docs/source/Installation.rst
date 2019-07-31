@@ -13,7 +13,7 @@ Anaconda is a free and open-source[5] distribution of the Python and R programmi
 
 .. warning::
 
-	Mark the option  *Add Anaconda to my PATH enviroment variable* during installation.
+	Check the option  *Add Anaconda to my PATH enviroment variable* during installation.
 
 After installing Anaconda you must download and install pyLPM package.
 
