@@ -1,4 +1,9 @@
+"""Summary
 
+Attributes:
+    return_exp_var (list): Description
+    return_model_var (dict): Description
+"""
 # IMPORT PACKAGES # 
 
 
@@ -31,22 +36,38 @@ import warnings
 import math
 import os
 
+from pyLPM import plots
+
 # INITIALIZE OFFLINE NOTEBOOK MODE
 pyo.init_notebook_mode()
 
 ##############################################################################################################################################
 
-# global variables  
-global return_exp_var
+# global variables 
+
+global return_exp_var # return of experimental variograms
 return_exp_var = []
 
-global return_model_var
+global return_model_var #return of model variograms 
 return_model_var = {}
 
 ##############################################################################################################################################
 
+# Calculate the distance coordinates 
+
 @numba.jit(fastmath=True)
 def _hdist(distancex, distancey, distancez):
+	
+	"""euclidian distance between samples 
+	
+	Args:
+	    distancex (np.array): distances in x coordinates 
+	    distancey (np.array): distances in y coordinates 
+	    distancez (np.array): distances in z coordinantes
+	
+	Returns:
+	    np.array: list of euclidian distances between samples 
+	"""
 	dist =np.zeros(distancex.shape[0])
 	for i in range(distancex.shape[0]):
 		dist[i] = np.sqrt(distancex[i]**2 + distancey[i]**2 + distancez[i]**2) + 0.0000000001
@@ -54,8 +75,20 @@ def _hdist(distancex, distancey, distancez):
 
 ##############################################################################################################################################
 
+# Calculate the distances in planar coordinates
+
 @numba.jit(fastmath=True)
 def _xydist(distancex, distancey):
+	
+	"""Planar distances between samples 
+	
+	Args:
+	    distancex (np.array): distances in x coordinates 
+	    distancey (np.array): distances in y coordinates 
+	
+	Returns:
+	    np.array: List of planar distances 
+	"""
 	dist =np.zeros(distancex.shape[0])
 	for i in range(distancex.shape[0]):
 		dist[i] = np.sqrt(distancex[i]**2 + distancey[i]**2 ) + 0.0000000001
@@ -63,8 +96,18 @@ def _xydist(distancex, distancey):
 
 ##############################################################################################################################################
 
+# Calculate the x coordinates distances
+
 @numba.jit(fastmath=True)
 def _xdist(pairs):
+	"""Summary
+	
+	Args:
+	    pairs (lst): Sample points 
+	
+	Returns:
+	    np.array: x coordinate distances 
+	"""
 	dist =np.zeros(pairs.shape[0])
 
 	for i in range(pairs.shape[0]):
@@ -73,8 +116,18 @@ def _xdist(pairs):
 
 ##############################################################################################################################################
 
+# Calculate the y coordinates distances
+
 @numba.jit(fastmath=True)
 def _ydist(pairs):
+	"""Summary
+	
+	Args:
+	    pairs (lst): Sample points 
+	
+	Returns:
+	    np.array: y coordinate distances 
+	"""
 	dist =np.zeros(pairs.shape[0])
 	for i in range(pairs.shape[0]):
 		dist[i] = (pairs[i][0][1] - pairs[i][1][1])
@@ -82,8 +135,18 @@ def _ydist(pairs):
 
 ##############################################################################################################################################
 
+# Calculate the z coordinates distances
+
 @numba.jit(fastmath=True)
 def _zdist(pairs):
+	"""Summary
+	
+	Args:
+	    pairs (lst):  Sample points  
+	
+	Returns:
+	    np.array: z coordinate distances 
+	"""
 	dist =np.zeros(pairs.shape[0])
 	for i in range(pairs.shape[0]):
 		dist[i] = (pairs[i][0][2] - pairs[i][1][2])
@@ -91,8 +154,20 @@ def _zdist(pairs):
 
 ##############################################################################################################################################
 
+# Calculate pairs combination where vertical and horizontal distances are less than the maximum distance
+
 @numba.jit(fastmath=True)
 def _combin(points,n, max_dist):
+	"""Summary
+	
+	Args:
+	    points (lst): sample points 
+	    n (integer): number of samples 
+	    max_dist (float): maximum permissible distance
+	
+	Returns:
+	    lst: List of tuples containing the permissible pairs 
+	"""
 	dist =[]
 	p = 0
 	for i in range(0,n):
@@ -106,9 +181,22 @@ def _combin(points,n, max_dist):
 
 ##############################################################################################################################################
 
+# Rotate data according azimuth and dip directions 
+
 @numba.jit(fastmath=True)
 def _rotate_data(xh, yh, zh, azimute, dip):
-
+	"""Summary
+	
+	Args:
+	    xh (lst): x coordinate distances
+	    yh (lst): y coordinate distances 
+	    zh (lst): z coordinate distances
+	    azimute (lst): azimuth directions 
+	    dip (lst): dip directions 
+	
+	Returns:
+	    lst: Rotate coordiantes Xrot, Yrot and Zrot
+	"""
 	xhrot = []
 	yhrot = []
 	zhrot = []
@@ -130,37 +218,53 @@ def _rotate_data(xh, yh, zh, azimute, dip):
 
 ##############################################################################################################################################
 			 
+# Calculate all distances in dataset 
 
 def _distances(dataset, nlags, x_label, y_label, z_label, 
 	lagdistance, head_property, tail_property, choice):
 
 	'''distances
-	Returns:	
-	 distance_dataframe (pandas.DataFrame): Pandas Dataframe containing all the distance metrics
-	 DX (pandas.DataFrame.Series) : Difference of x cartesian coordinates 
-	 DY (pandas.DataFrame.Series) : = diference of y cartesian values from the head and tails of the vector  
-	 DZ (pandas.DataFrame.Series) : = diference of z cartesian values from the head and tails of the vector 
-	 XY (pandas.DataFrame.Series) : = Distance projection on XY plane of the vector  
-	 H  (pandas.DataFrame.Series) : = Distance value from head and tail of vector  
-	 Var 1 (head) (pandas.DataFrame.Series) : Value from variable 1 on the head of vector 
-	 Var 2 (head) (pandas.DataFrame.Series) : Value from variable 2 on the head of vector  
-	 Var 1 (tail) (pandas.DataFrame.Series) : Value from variable 1 on the tail of vector 
-	 Var 2 (tail) (pandas.DataFrame.Series) : Value form variable 2 on the tail of vector 
-	 INDEX HEAD   (pandas.DataFrame.Series) : Index of propertie 1 sample 
-	 INDEX TAIL   (pandas.DataFrame.Series) : Index of propertie 2 sample
+
+	Args:
+	    dataset (pd.DataFrame): pandas dataset containing all spatial data 
+	    nlags (int): Number of lags
+	    x_label (string): Label for X direction 
+	    y_label (string): Label for Y direction 
+	    z_label (string): Label for Z direction 
+	    lagdistance (float): Lag size 
+	    head_property (string): Label for head variable 
+	    tail_property (string): Label for the tail variable 
+	    choice (float): Percentual of datasest sampling 0.0-1.0
+	
+	Returns:
+		pd.DataFrame: Distances of permissible pairs 
+
+
 	'''
-	max_dist = (nlags + 1)*lagdistance
-	X = dataset[x_label].values
+
+	# Variables definition 
+
+	max_dist = (nlags + 1)*lagdistance # Define the maximum distance search 
+	X = dataset[x_label].values 
 	Y = dataset[y_label].values
 	Z = dataset[z_label].values
 	HEAD = dataset[head_property].values
 	TAIL = dataset[tail_property].values
+
+	# If random option is selected, select a number of data according some proportion 
+
 	if (choice != 1.0):
 		points = np.array(list(zip(X,Y,Z,HEAD,TAIL)))
 		points = np.array([points[np.random.randint(0,len(points))] for i in range(int(points.shape[0]*choice))])
 	else:
 		points = np.array(list(zip(X,Y,Z,HEAD,TAIL)))
+
+	# Define the permissible combination of samples according the maximum distance
+
 	pairs = _combin(points,points.shape[0], max_dist)
+
+	# Define distance variables and dataset 
+
 	distancex = _xdist(pairs) 
 	distancey =  _ydist(pairs) 
 	distancez =  _zdist(pairs)
@@ -170,6 +274,9 @@ def _distances(dataset, nlags, x_label, y_label, z_label,
 	head_2 = np.array([pair[0][4] for pair in pairs])
 	tail_1 = np.array([pair[1][3] for pair in pairs])
 	tail_2 = np.array([pair[1][4] for pair in pairs])
+
+	# Return the distances dataframe 
+
 	distance_dataframe =  np.array([distancex, 
 					distancey, 
 					distancez, 
@@ -179,7 +286,8 @@ def _distances(dataset, nlags, x_label, y_label, z_label,
 					head_2,
 					tail_1,
 					tail_2,]).T
-	return distance_dataframe[distanceh[:,] < max_dist ]
+
+	return distance_dataframe[distanceh[:,] < max_dist ] # Only values less than the maximum distance
 
 ##############################################################################################################################################
 
@@ -187,28 +295,38 @@ def _distances_varmap(dataset, X,Y,Z, nlags, lagdistance, head_property, tail_pr
 					choice):
 
 	'''distances
-	Returns:	
-	 distance_dataframe (pandas.DataFrame): Pandas Dataframe containing all the distance metrics
-	 DX (pandas.DataFrame.Series) : Difference of x cartesian coordinates 
-	 DY (pandas.DataFrame.Series) : = diference of y cartesian values from the head and tails of the vector  
-	 DZ (pandas.DataFrame.Series) : = diference of z cartesian values from the head and tails of the vector 
-	 XY (pandas.DataFrame.Series) : = Distance projection on XY plane of the vector  
-	 H  (pandas.DataFrame.Series) : = Distance value from head and tail of vector  
-	 Var 1 (head) (pandas.DataFrame.Series) : Value from variable 1 on the head of vector 
-	 Var 2 (head) (pandas.DataFrame.Series) : Value from variable 2 on the head of vector  
-	 Var 1 (tail) (pandas.DataFrame.Series) : Value from variable 1 on the tail of vector 
-	 Var 2 (tail) (pandas.DataFrame.Series) : Value form variable 2 on the tail of vector 
-	 INDEX HEAD   (pandas.DataFrame.Series) : Index of propertie 1 sample 
-	 INDEX TAIL   (pandas.DataFrame.Series) : Index of propertie 2 sample
+	
+	Args:
+	    dataset (pd.DataFrame): DataFrame containing all spatial data
+	    X (string): Label for the X coordinates 
+	    Y (string): Label for the Y coordinates 
+	    Z (string): Label for the Z coordinates 
+	    nlags (int): Number of lags to calculate distannces
+	    lagdistance (float): Size of the lag 
+	    head_property (string): Label for the head property 
+	    tail_property (string): Label for the tail property
+	    choice (float): Perncentual of data sample 
+	Return:
+		np.array: All permissible dataset distances 
 	'''
+
+	# Define coordinates 
 
 	X = np.array(X)
 	Y = np.array(Y)
 	Z = np.array(Z)
 
+	# Define the maximum distance 
+
 	max_dist = (nlags + 1)*lagdistance
+
+	# Define tail and head properties 
+
 	HEAD = dataset[head_property].values
 	TAIL = dataset[tail_property].values
+
+	# If random option is selected, select a number of data according some proportion 
+
 	if (choice != 1.0):
 		np.random.seed(0)
 		np.random.seed(138276)
@@ -216,7 +334,14 @@ def _distances_varmap(dataset, X,Y,Z, nlags, lagdistance, head_property, tail_pr
 		points = np.array([points[np.random.randint(0,len(points))] for i in range(int(points.shape[0]*choice))])
 	else:
 		points = np.array(list(zip(X,Y,Z,HEAD,TAIL)))
+
+	# Define the permissible combination of samples according the maximum distance
+
 	pairs = _combin(points,points.shape[0], max_dist)
+
+	# Define distance variables and dataset 
+
+
 	distancex = _xdist(pairs) 
 	distancey =  _ydist(pairs) 
 	distancez =  _zdist(pairs)
@@ -226,6 +351,10 @@ def _distances_varmap(dataset, X,Y,Z, nlags, lagdistance, head_property, tail_pr
 	head_2 = np.array([pair[0][4] for pair in pairs])
 	tail_1 = np.array([pair[1][3] for pair in pairs])
 	tail_2 = np.array([pair[1][4] for pair in pairs])
+
+	# Return the distances dataframe 
+
+
 	distance_dataframe =  np.array([distancex, 
 					distancey, 
 					distancez, 
@@ -235,7 +364,7 @@ def _distances_varmap(dataset, X,Y,Z, nlags, lagdistance, head_property, tail_pr
 					head_2,
 					tail_1,
 					tail_2,]).T
-	return distance_dataframe[distanceh[:,] < max_dist ]
+	return distance_dataframe[distanceh[:,] < max_dist ] # Only values less than the maximum distance
 
 ##############################################################################################################################################
 
@@ -244,13 +373,32 @@ def __permissible_pairs (lag_multiply, lagdistance, lineartolerance, check_azimu
 						dist):
 
 	'''permissible_pairs
+	
 	Args:
-	 lag_multiply (double): Mutliplemaxi of lag distance
-	Returns:	
-	 distances (numpy array): Returns the permissible sample pairs for omnidirecional functions
+	    lag_multiply (double): Mutliplemaxi of lag distance
+	    lagdistance (TYPE): Description
+	    lineartolerance (TYPE): Description
+	    check_azimuth (TYPE): Description
+	    check_dip (TYPE): Description
+	    check_bandh (TYPE): Description
+	    check_bandv (TYPE): Description
+	    htol (TYPE): Description
+	    vtol (TYPE): Description
+	    hband (TYPE): Description
+	    vband (TYPE): Description
+	    omni (TYPE): Description
+	    dist (TYPE): Description
+	
+	Returns:
+	    distances (numpy array): Returns the permissible sample pairs for omnidirecional functions
 	'''
+	# Define the minimum range and the maximum rannge 
+
 	minimum_range = lag_multiply*lagdistance - lineartolerance
 	maximum_range = lag_multiply*lagdistance + lineartolerance
+
+	# Filter samples acoording distances tolerances 
+
 	if omni == False:
 		filter_dist = dist[(dist[:,4] >= minimum_range) & 
 						  (dist[:,4] <= maximum_range) & 
@@ -269,27 +417,51 @@ def __calculate_experimental(dist, lag_multiply, lagdistance, lineartolerance, c
 					check_dip, check_bandh, check_bandv, htol, vtol, hband, vband, omni,type_var):
 
 	'''calculate_experimental
+	
 	Args:
-	 lag_multiply (double): Mutliple of lag distance	
-	 type_var (string): String containing the type of spatial continuity function to calculate
-	 					5 admissible functions are possible:
-						"Variogram"
-		 				"Covariogram"
-		 				"Correlogram"
-		 				"PairWise"
-		 				"RelativeVariogram"
+	    dist (pd.DataFrame): Pandas Dataframe containing all spatial data
+	    lag_multiply (int): Number of lag mutliplication
+	    lagdistance (float): Lag distance size 
+	    lineartolerance (float): Linear tolerance length 
+	    check_azimuth (float): check if azimuth direction is permissible 
+	    check_dip (float): check if dip direction is permissible 
+	    check_bandh (float): check if horizontal band is permissible 
+	    check_bandv (float): check if vertical band is permissible 
+	    htol (float): Horizontal angular tolerance 
+	    vtol (float): Vertical angular tolerance
+	    hband (float): Horizontal band width 
+	    vband (float): Vertical band width 
+	    omni (bool): Boolean for omnidirecional variogram (True= use, False =don`t use)
+	    type_var (string): Experimental Continuity function 
+
+	    type_var:
+	    	'Variogram'
+	    	'Covariogram'
+	    	'Correlogram'
+	    	'PairWise'
+	    	'Relative_Variogram'
+	
 	Returns:
-	 value (double): Experimental continuity function value 
-	 number_of_pairs (int) : number of pairs used to calculate the experimental function 
-	 average_distace (double): average distance of experimental continuity function value  
+	    value (double): Experimental continuity function value 
+	    number_of_pairs (int): number of pairs used to calculate the experimental function 
+	    average_distace (double): average distance of experimental continuity function value  
+	
+	Raises:
+	    Exception: Experimental continuity function not in permissible functions 
 	'''
+
+	# Calculate the permissible pairs for experimental continuity functions 
 
 	points = __permissible_pairs(lag_multiply, lagdistance, lineartolerance, check_azimuth,
 						check_dip, check_bandh, check_bandv, htol, vtol, hband, vband, omni,
 						dist)
+
+	# Show error if experimental variogram is not valid 
 	
 	if type_var not in['Variogram','Covariogram','Correlogram','PairWise','Relative_Variogram']:
 		raise Exception("Experimental continuity function not in admissible functions")
+
+	# Calculate experimental variogram according the specific experimental function 
 
 	if points.size  != 0:
 		number_of_pairs = float(points.shape[0])
@@ -322,21 +494,44 @@ def _calculate_experimental_function(dataset, x_label, y_label, z_label,
 					head_property, tail_property, choice, omni):
 
 	'''calculate_experimental_function
-	Args:	
-	 plot_graph (bool) = Boolean for selecting plotting experimental values 
-	 show_pairs (bool) = Boolean for selecting plotting experimental number of pairs 
-	 type_var (string): String containing the type of spatial continuity function to calculate
-	 					5 admissible functions are possible:
-						"Variogram"
-		 				"Covariogram"
-		 				"Correlogram"
-		 				"PairWise"
-		 				"RelativeVariogram" 
+	
+	Args:
+	    dataset (pd.DataFrame): Pandas dataframe containing all values
+	    x_label (string): Label for x coordinates
+	    y_label (string): Label for y coordinates
+	    z_label (string): Label for z coordinates 
+	    type_var (string): Experimental continuity function 
+		
+		type_var:
+	    	'Variogram'
+	    	'Covariogram'
+	    	'Correlogram'
+	    	'PairWise'
+	    	'Relative_Variogram'
+
+	    lagdistance (float): Size of lag size
+	    lineartolerance (float): Linear tolerance
+	    htol (float): Horizontal angular tolerance 
+	    vtol (float): Vertical angular tolerance
+	    hband (float): Horizontal band width 
+	    vband (float): Vertical band width 
+	    azimuth (float): Azimuth direction in degrees
+	    dip (float): Float direction in degrees
+	    nlags (int): Number of lags to calculate experimental functions
+	    head_property (string): String with name of  Head Property
+	    tail_property (string): String with anme of Tail Property
+	    choice (float): Percentual of random sampling 0-1
+	    omni (bool): Omnidirecional option True =Use omnidirecional , False = Don't use omnidirecional
+	
 	Returns:
-	 df (pandas.DataFrame): Pandas Dataframe containing the experimental continuity functions of all lags
+	    df (pandas.DataFrame): Pandas Dataframe containing the experimental continuity functions of all lags
 	'''
+	# Calculate all permissible distances
 
 	dist = _distances(dataset, nlags, x_label, y_label, z_label, lagdistance, head_property, tail_property, choice)
+
+	# Define the angles and tolerances 
+
 	cos_Azimuth = np.cos(np.radians(90-azimuth))
 	sin_Azimuth = np.sin(np.radians(90-azimuth))
 	cos_Dip     = np.cos(np.radians(90-dip))
@@ -347,6 +542,8 @@ def _calculate_experimental_function(dataset, x_label, y_label, z_label,
 	check_dip     = np.abs((dist[:,3]*sin_Dip + dist[:,2]*cos_Dip)/dist[:,4])
 	check_bandh   = np.abs(cos_Azimuth*dist[:,1]- sin_Azimuth*dist[:,0])
 	check_bandv	  = np.abs(sin_Dip*dist[:,2] - cos_Dip*dist[:,3])
+
+	# Create experimental variogram dataset 
 
 	number_of_int = range(1, (nlags +1))
 	value_exp = np.array([__calculate_experimental(dist, i, lagdistance, lineartolerance, check_azimuth,
@@ -365,21 +562,46 @@ def _calculate_experimental_function_varmap(type_var,  lineartolerance, htol, vt
 					omni = False, plot_graph=False, show_pairs=False):
 
 	'''calculate_experimental_function
-	Args:	
-	 plot_graph (bool) = Boolean for selecting plotting experimental values 
-	 show_pairs (bool) = Boolean for selecting plotting experimental number of pairs 
-	 type_var (string): String containing the type of spatial continuity function to calculate
-	 					5 admissible functions are possible:
-						"Variogram"
-		 				"Covariogram"
-		 				"Correlogram"
-		 				"PairWise"
-		 				"RelativeVariogram" 
+	
+	Args:
+	    type_var (string): Type of experimental variogram function 
+
+		type_var:
+	    	'Variogram'
+	    	'Covariogram'
+	    	'Correlogram'
+	    	'PairWise'
+	    	'Relative_Variogram'
+
+	    lineartolerance (TYPE): Description
+	    htol (TYPE): Description
+	    vtol (TYPE): Description
+	    hband (TYPE): Description
+	    vband (TYPE): Description
+	    azimuth (TYPE): Description
+	    dip (TYPE): Description
+	    dataset (TYPE): Description
+	    nlags (TYPE): Description
+	    X_rot (TYPE): Description
+	    Y_rot (TYPE): Description
+	    Z_rot (TYPE): Description
+	    lagdistance (TYPE): Description
+	    head_property (TYPE): Description
+	    tail_property (TYPE): Description
+	    choice (TYPE): Description
+	    omni (bool, optional): Description
+	    plot_graph (bool, optional): Description
+	    show_pairs (bool, optional): Description
+	
 	Returns:
-	 df (pandas.DataFrame): Pandas Dataframe containing the experimental continuity functions of all lags
+	    df (pandas.DataFrame): Pandas Dataframe containing the experimental continuity functions of all lags
 	'''
+	# Calculate all permissible distances
 
 	dist = _distances_varmap(dataset, X_rot, Y_rot,Z_rot, nlags, lagdistance, head_property, tail_property,choice)
+
+	# Define the angles and tolerances 
+
 	cos_Azimuth = np.cos(np.radians(90-azimuth))
 	sin_Azimuth = np.sin(np.radians(90-azimuth))
 	cos_Dip     = np.cos(np.radians(90-dip))
@@ -390,6 +612,8 @@ def _calculate_experimental_function_varmap(type_var,  lineartolerance, htol, vt
 	check_dip     = np.abs((dist[:,3]*sin_Dip + dist[:,2]*cos_Dip)/dist[:,4])
 	check_bandh   = np.abs(cos_Azimuth*dist[:,1]- sin_Azimuth*dist[:,0])
 	check_bandv	  = np.abs(sin_Dip*dist[:,2] - cos_Dip*dist[:,3])
+
+	# Create experimental variogram dataset 
 
 	number_of_int = range(1, (nlags +1))
 	value_exp = np.array([__calculate_experimental(dist, i, lagdistance, lineartolerance, check_azimuth,
@@ -419,39 +643,55 @@ def _modelling(experimental_dataframe,azimuths, dips, rotation_reference,
  model_func, ranges, contribution, nugget, inverted= False, plot_graph = True ):
 
 	'''plot_experimental_function)_omni
+	
 	Args:
-	 experimental dataframe (pandas.DataFrame): Pandas DataFrame containing experimental continuity functions 	
-	 rotation reference (list(azimuth, dip, rake)): List containing the reference of principal directions angles in degrees 
-	 model_func(list(string)) : List containing the models for all structures. size of the list must be the same of the number of structures
-	 							3 admissible functions are possible:
-	 							"Spherical"
-								"Gaussian"
-								"Exponential"
-	 ranges(list(list(maximum range, medium range, minimum range))) : list of lists containing the maximum, medium and minimum range for each number of structures
-	 contribution (list): list of contributions for each strucutre 
-	 nugget (double): Nugget effect value 
-	 inverted (bool): If true plot model according covariogram form, otherwise plot model according the variogram form
-	 plot_graph (bool): If true plot the experimental variogram and the spatial continuity model
-			
+	    experimental_dataframe (pd.DataFrame): pandas Data Frame containing the experimental continuity functions 
+	    azimuths (lst): List of azimuth directions  
+	    dips (lst): List of dip directions 
+	    rotation_reference (lst): List containing the azimuth and dips for all experimental variograms [azm, dip]
+	    model_func (str): String containing the experimental function model 
+
+		model_func:
+		'Exponential'
+		'Gaussian'
+		'Spherical'
+
+	    ranges (lst): List containing the ranges for each structure for experimental continuity functionns 
+	    contribution (lst): List containing the variogram model contribution for each structure  
+	    nugget (float): The nugget effect
+	    inverted (bool, optional): Invert variogram modelling to a covariogram modelling 
+	    plot_graph (bool, optional): Option to plot graph 
+	
 	Returns:
-	 plot (matplotlib.pyplot): Plot of omnidirecional experimental continuity function and the spatial continuity model for one direction 
+	    plot (matplotlib.pyplot): Plot of omnidirecional experimental continuity function and the spatial continuity model for one direction 
+	
+	Raises:
+	    ValueError: Number of principal directions must be less or equal 3 or Variogram structures not have the same size
 	'''
 
+	# Give errors for modelling inconsistences 
+
 	if len(ranges[0]) != 3:
-		raise ValueError("Variogram ranges must range 3 principal directions")
+		raise ValueError("Number of principal directions must be less or equal 3")
 	if len(ranges) == len(contribution) and len(ranges) == len(model_func):
 		pass
 	else:
-		raise ValueError("Variogram structures must be the same size")
+		raise ValueError("Variogram structures must be have the same size")
+
+	# Calculate cartesian coordiantes according polar approach 
 
 
 	y = math.cos(math.radians(dips))*math.cos(math.radians(azimuths))
 	x = math.cos(math.radians(dips))*math.sin(math.radians(azimuths))  
 	z = math.sin(math.radians(dips))
 
+	# Define reference plane direction s
+
 	angle_azimuth = math.radians(rotation_reference[0])
 	angle_dip = math.radians(rotation_reference[1])
 	angle_rake = math.radians(rotation_reference[2])
+
+	# Define rotation matrix
 
 
 	rotation1 = np.array([[math.cos(angle_azimuth), -math.sin(angle_azimuth), 0],
@@ -470,6 +710,8 @@ def _modelling(experimental_dataframe,azimuths, dips, rotation_reference,
 	rot2 = np.dot(rotation2.T, rot1)
 	rot3= np.dot(rotation3.T,rot2)
 
+	# Rotate samples 
+
 	rotated_range =[]
 
 	for i in ranges:
@@ -480,6 +722,8 @@ def _modelling(experimental_dataframe,azimuths, dips, rotation_reference,
 
 		rotated = (np.multiply(rot3, np.array([rangex, rangey, rangez]).T))
 		rotated_range.append(math.sqrt(rotated[0]**2+rotated[1]**2+rotated[2]**2))
+
+	# Calculate model function 
 
 	distancemax = experimental_dataframe['Average distance'].max()
 	distances = np.linspace(0, distancemax, 200)
@@ -526,19 +770,55 @@ def _modelling(experimental_dataframe,azimuths, dips, rotation_reference,
 ##############################################################################################################################################
 	
 def _varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, dataset, x_label, y_label, z_label, nlags, 
-					lagdistance, head_property, tail_property, ndirections, wait_please, choice = 5000, interactive = False):
+					lagdistance, head_property, tail_property, ndirections, wait_please, choice = 1.00, interactive = False):
+	"""Summary
+	
+	Args:
+	    azimuth (float): Azimuth of reference plane
+	    dip (dip): Dip of the reference plane 
+	    lineartolerance (TYPE): Linear tolerance 
+	    htol (float): Horizontal tolerance
+	    vtol (float): Vertical tolerance 
+	    hband (float): Horizontal bandwidth 
+	    vband (float): Vertical bandwidth 
+	    type_var (float): Experimental continuity function 
 
+		type_var:
+	    	'Variogram'
+	    	'Covariogram'
+	    	'Correlogram'
+	    	'PairWise'
+	    	'Relative_Variogram'
+
+	    dataset (pd.DataFrame): pandas DataFrame containing the data
+	    x_label (str): Label for x coordinates
+	    y_label (str): Label for y coordinates
+	    z_label (str): Label for z coordinates 
+	    nlags (int): Number of lags to calculate experimental variogram
+	    lagdistance (float): Lag size 
+	    head_property (str): String for the head property
+	    tail_property (str): String for the tail property
+	    ndirections (int): Number of directions for calculate experimental function
+	    wait_please (obj): Object to update progress bar
+	    choice (float, optional): Values to random select experimental variograms
+	    interactive (bool, optional): Enable interactive varmaps
+	"""
+	# Define X, Y, Z coordinates
 
 	X = dataset[x_label].values
 	Y = dataset[y_label].values
 	Z = dataset[z_label].values
 
+	# Set progress bar to zero 
+
 	if interactive == True:
 			wait_please.value = 0
 
-	
+	# rotate dataset acording the reference plane
 
 	Xrot, Yrot, Zrot = _rotate_data(X, Y, Z, azimuth, dip)
+
+	# Calculate experimental functions 
 
 	lag_adm = []
 	azimute_adm = []
@@ -556,15 +836,21 @@ def _varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, d
 		values_2 = np.array([np.radians(i) for j in range(df_exp.shape[0])])
 		azimute_adm = np.append(azimute_adm, values_2)
 
+	# Define the interplation parameters 
 
 	gdiscrete = 40
 	ncontour = 40
 
+	# define the x and y coordinates in cartesian way 
+
 	x = np.array(lag_adm)*np.sin(azimute_adm)
 	y = np.array(lag_adm)*np.cos(azimute_adm)
 
+	# Define the maximum grid size 
+
 	maximo = max([max(x), max(y)])
 	
+	# Filter values less than a circle distance
 
 	ray = maximo 
 	truzao = []
@@ -580,6 +866,8 @@ def _varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, d
 
 	x= x.ravel()
 	y= y.ravel()
+
+	# Create grid and interpolation 
 
 
 	Xi = np.linspace(-maximo,maximo,gdiscrete) 
@@ -607,8 +895,12 @@ def _varmap(azimuth, dip, lineartolerance, htol, vtol, hband, vband, type_var, d
 	Vi = griddata((x, y), np.array(continuidade), (Xi[None,:], Yi[:,None]), method='linear')	
 	cf = ax.contourf(Xi,Yi,Vi, ncontour, cmap=plt.cm.jet)
 
+	# Define gradient 
+
 	gradient = np.linspace(1,0, 256)
 	gradient = np.vstack((gradient, gradient))
+
+	# Create matplotlib graph 
 
 
 	cax = plt.axes([0.72,0.1, 0.05, 0.7])
@@ -628,18 +920,29 @@ def _covariogram_map_3d(property_value, dataset, x_label, y_label, z_label, neig
 	cutx =[-np.inf, np.inf],cuty =[-np.inf,np.inf],cutz =[-np.inf,np.inf], size =20 ):
 
 	'''covariogram_map_3d
+	
 	Args:
-	property_value(string): String containing the property to create the covariogram map
-	neighbors (int) : Number of neighbors using in KNearest neighbors 
-	division(int, optional): discretize number of covariogram map
-	size(int, optional): size of bullet
-	alpha(float, optional): the level of transparency (0- transparent, 1-solid)
-	cutx (list, optional): list containing the minimum cutsize and the maximum cutsize for x coordinates
-	cuty (list, optional): list containing the minimum cutsize and the maximum cutsize for y coordinates
-	cutz (list, optional): list containing the minimum cutsize and the maximum cutsize for z coordinates
-					
-	Returns:
-	plot (matplotlib.pyplot): Plot of Covariance map in three dimensional scale 
+	    property_value (TYPE): Description
+	    dataset (TYPE): Description
+	    x_label (TYPE): Description
+	    y_label (TYPE): Description
+	    z_label (TYPE): Description
+	    neighbors (int): Number of neighbors using in KNearest neighbors 
+	    division (int, optional): Description
+	    alpha (float, optional): Description
+	    cutx (list, optional): list containing the minimum cutsize and the maximum cutsize for x coordinates
+	    cuty (list, optional): list containing the minimum cutsize and the maximum cutsize for y coordinates
+	    cutz (list, optional): list containing the minimum cutsize and the maximum cutsize for z coordinates
+	    size (int, optional): Description
+	
+	Deleted Parameters:
+	    property_value(string): String containing the property to create the covariogram map
+	    division(int: discretize number of covariogram map
+	    optional), alpha(float: the level of transparency (0- transparent, 1-solid)
+	    size(int: size of bullet
+	
+	No Longer Returned:
+	    plot (matplotlib.pyplot): Plot of Covariance map in three dimensional scale 
 	'''
 
 
@@ -690,8 +993,16 @@ def _covariogram_map_3d(property_value, dataset, x_label, y_label, z_label, neig
 ##############################################################################################################################################
 
 def _modelling_to_interact(**kargs):
+	"""Summary
+	
+	Args:
+	    **kargs: Args to modelling variogram interactively 
+	
+	Returns:
+	    TYPE: Variogram model 
+	"""
 
-
+	# Extract model parameters 
 
 	rotation_reference = [kargs.get('rotation_max') ,kargs.get('rotation_med'),kargs.get('rotation_min') ]
 	ranges =[]
@@ -716,13 +1027,15 @@ def _modelling_to_interact(**kargs):
 	azimuths = kargs.get('azimuths')
 	dips = kargs.get('dips')
 
-
+	# Calculate models for each experimental directions 
 
 	dfs = []
 	for j, i in enumerate(kargs.get('experimental_dataframe')):
 		dfs.append(_modelling(i, azimuths[j], dips[j], rotation_reference,model_func ,ranges,contribution,nugget, inverted))
 
 	
+	# Plot graph 
+
 	size_row = 1 if len(dfs) < 4 else int(math.ceil(len(dfs)/4))
 	size_cols = 4 if len(dfs) >= 4 else int(len(dfs))
 
@@ -733,9 +1046,6 @@ def _modelling_to_interact(**kargs):
 	count_cols = 1
 
 	for j, i in enumerate(dfs):
-
-		
-
 		fig.add_trace(go.Scatter(x=kargs.get('experimental_dataframe')[j]['Average distance'], y=kargs.get('experimental_dataframe')[j]['Spatial continuity'],
                 mode='markers',
                 name='Experimental',
@@ -755,6 +1065,8 @@ def _modelling_to_interact(**kargs):
 
 	fig.show()
 
+	# Store variogram model 
+
 	global return_model_var
 	return_model_var = {'number_of_structures' : kargs.get('nstructures'),
 						'rotation_reference': rotation_reference,
@@ -767,14 +1079,16 @@ def _modelling_to_interact(**kargs):
 
 ##############################################################################################################################################
 
-def interactive_modelling(experimental_dataframe, number_of_structures, show_pairs = False):
+def interactive_modelling(experimental_dataframe: callable, number_of_structures: int , show_pairs: bool = False):
 	"""Opens the interactive modeling controlls. Store the results in a global variable `gammapy.return_model_var`.
 	
 	Args:
-		experimental_dataframe (DataFrame): Experimental variogram DataFrame. Assessed by `gammapy.return_exp_var`
-		directions (lst of lsts): directions to model variogram. Example [[166.,76],[0.,0.]] for modeling in direction azimuth = 166, dip = 0 and azimuth = 76 and dip = 0.
-		number_of_structures (int): number of structures
-		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+	    experimental_dataframe (DataFrame): Experimental variogram DataFrame. Assessed by `gammapy.return_exp_var`
+	    number_of_structures (int): number of structures
+	    show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+	
+	Deleted Parameters:
+	    directions (lst of lsts): directions to model variogram. Example [[166.,76],[0.,0.]] for modeling in direction azimuth = 166, dip = 0 and azimuth = 76 and dip = 0.
 	"""
 
 	warnings.filterwarnings('ignore')
@@ -845,26 +1159,28 @@ def interactive_modelling(experimental_dataframe, number_of_structures, show_pai
 
 ##############################################################################################################################################
 
-def modelling(experimental_dict, rotation_max, rotation_med, rotation_min,
-	nugget,inverted, rangemax, rangemed, rangemin, model, contribution, show_pairs = False):
+def modelling(experimental_dict: callable, rotation_max: float, rotation_med: float, rotation_min: float,
+	nugget: int ,inverted: bool, rangemax: list, rangemed: list, rangemin: list, model: list, contribution:list, 
+	show_pairs: bool = False):
+
 	"""Variogram modeling function without interactive controlls.
 	
 	Args:
-		experimental_dict (dict): experimental variogram 
-		rotation_max (float): azimuth
-		rotation_med (float): dip
-		rotation_min (float): rake
-		nugget (float): nugget contribution
-		inverted (bool): inverted model flag
-		rangemax (lst): list of ranges in maximum continuity direction for each structure
-		rangemed (lst): list of ranges in intermediate continuity direction for each structure
-		rangemin (lst): list of ranges in minumim continuity direction for each structure
-		model (lst of str): lst of models for each structure. `Spherical`, `Exponential` or `Gaussian`.
-		contribution (lst of floats): list of contributions for each structure
-		show_pairs (bool, optional): Show pairs flag. Defaults to False.
-
+	    experimental_dict (dict): experimental variogram 
+	    rotation_max (float): azimuth
+	    rotation_med (float): dip
+	    rotation_min (float): rake
+	    nugget (float): nugget contribution
+	    inverted (bool): inverted model flag
+	    rangemax (lst): list of ranges in maximum continuity direction for each structure
+	    rangemed (lst): list of ranges in intermediate continuity direction for each structure
+	    rangemin (lst): list of ranges in minumim continuity direction for each structure
+	    model (lst of str): lst of models for each structure. `Spherical`, `Exponential` or `Gaussian`.
+	    contribution (lst of floats): list of contributions for each structure
+	    show_pairs (bool, optional): Show pairs flag. Defaults to False.
+	
 	Returns:
-		dict: variogram model DataFrame
+	    dict: variogram model DataFrame
 	"""
 
 	warnings.filterwarnings('ignore')
@@ -897,17 +1213,17 @@ def modelling(experimental_dict, rotation_max, rotation_med, rotation_min,
 
 ##############################################################################################################################################	
 
-def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
+def interactive_varmap(dataset:callable, X:str, Y:str, head:str, tail:str, Z:str =None, choice:float =1.0):
 	"""Opens interactive variogram map controls.
 	
 	Args:
-		dataset (DataFrame): Data points DataFrame
-		X (str): x column coordinates name
-		Y (str): y column cordinates name
-		head (str): head property name
-		tail (str): tail property name
-		Z (str, optional): z coordinates column name. Defaults to None.
-		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	    dataset (DataFrame): Data points DataFrame
+	    X (str): x column coordinates name
+	    Y (str): y column cordinates name
+	    head (str): head property name
+	    tail (str): tail property name
+	    Z (str, optional): z coordinates column name. Defaults to None.
+	    choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	"""
 
 	# set same seed 
@@ -971,10 +1287,20 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 
 		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
 		def on_varmap(change):	
+			"""Summary
+			
+			Args:
+			    change (TYPE): Description
+			"""
 			_varmap(azimuth.value,0, lineartolerance, htol, vtol, hband, vband, type_var.value, dataset, X, Y, 'Z', nlags.value, 
 					lagdistance.value, head, tail, ndirections.value, wait_please,  choice, True)
 	else: 
 		def on_varmap(change):			
+			"""Summary
+			
+			Args:
+			    change (TYPE): Description
+			"""
 			_varmap(azimuth.value, dip.value, lineartolerance, htol, vtol, hband, vband, type_var.value, dataset, X, Y, Z, nlags.value, 
 					lagdistance.value, head, tail, ndirections.value, wait_please,  choice, True)
 
@@ -983,23 +1309,24 @@ def interactive_varmap(dataset, X, Y, head, tail, Z =None, choice =1.0):
 
 ##############################################################################################################################################
 
-def varmap(dataset, X, Y, head, tail, azimuth, dip, nlags, lagdistance, ndirections, type_var,  Z =None, choice =1.0):
+def varmap(dataset: callable, X: str, Y: str, head: str, tail: str, azimuth: float,
+ dip: float, nlags: int, lagdistance: float, ndirections: int, type_var: str,  Z:str =None, choice =1.0):
 	"""Plots a variogram map.
 	
 	Args:
-		dataset (DataFrame): Point set DataFrame
-		X (str): x coordinates column name
-		Y (str): y coordinates column name
-		head (str): head variable name
-		tail (str): tail variable name
-		azimuth (float): azimuth
-		dip (float): dip
-		nlags (int): number of lags
-		lagdistance (float): lag distance
-		ndirections (int): number of directions
-		type_var (str): covariance funcrion type. `Variogram`, `Correlogram` ...
-		Z (str, optional): z coordinates variable name. Defaults to None.
-		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	    dataset (DataFrame): Point set DataFrame
+	    X (str): x coordinates column name
+	    Y (str): y coordinates column name
+	    head (str): head variable name
+	    tail (str): tail variable name
+	    azimuth (float): azimuth
+	    dip (float): dip
+	    nlags (int): number of lags
+	    lagdistance (float): lag distance
+	    ndirections (int): number of directions
+	    type_var (str): covariance funcrion type. `Variogram`, `Correlogram` ...
+	    Z (str, optional): z coordinates variable name. Defaults to None.
+	    choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	"""
 
 	# set same seed 
@@ -1032,28 +1359,34 @@ def varmap(dataset, X, Y, head, tail, azimuth, dip, nlags, lagdistance, ndirecti
 
 ##############################################################################################################################################
 
-def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs =False,  Z =None, choice =1.0):
+def interactive_experimental(dataset:callable, X:str, Y:str, head:str, tail:str, ndirections:int, show_pairs =False,  Z =None, choice =1.0):
 	"""Calculates experimental variogram. Store the results in a global variable `gammapy.return_exp_var`.
 	
 	Args:
-		dataset (DataFrame): data points DataFrame
-		X (str): x coorcinates column name
-		Y (str): y coordinates column name
-		head (str): head variable
-		tail (str): tail variable
-		ndirections (int): number of directions
-		show_pairs (bool, optional): show number of pairs flag. Defaults to False.
-		Z (str, optional): z coordinates column name. Defaults to None.
-		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	    dataset (DataFrame): data points DataFrame
+	    X (str): x coordinates column name
+	    Y (str): y coordinates column name
+	    head (str): head variable
+	    tail (str): tail variable
+	    ndirections (int): number of directions
+	    show_pairs (bool, optional): show number of pairs flag. Defaults to False.
+	    Z (str, optional): z coordinates column name. Defaults to None.
+	    choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	
+	Returns:
+	    TYPE: Description
 	"""
 
-	warnings.filterwarnings('ignore')
+	warnings.filterwarnings('ignore') # Ignore numpy erros
 	
-	global return_values_from_exp_var 
+	# If dataset 2D, fill Z values with zeros 
 
 	if Z == None:
 		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
-		Z = 'Z'			
+		Z = 'Z'
+
+
+	# Creating Ipython Widgets			
 
 	widgets_l = []
 	vboxes = []
@@ -1076,12 +1409,12 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 	execute = widgets.Button(description='Execute',icon='check')
 	output = widgets.Output()
 
-	# Defining progress bar widgets.HBox([execute, wait_please], display='flex',align_items='stretch',width='50%')
+	# Defining progress bar 
 
 	max_count = 1000
 	wait_please = widgets.IntProgress(min=0, max=ndirections) # instantiate the bar
 
-
+	# More boxes and layouts 
 
 	grid = widgets.HBox(vboxes, layout=widgets.Layout(width='5000px'))
 	box2 = widgets.HBox([execute, wait_please], display='flex',align_items='stretch',width='50%')
@@ -1094,10 +1427,13 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 
 	display(accordion)
 
+	# Define variograms with change 
+
 	returning = []
 
 	def on_variogram(change):
 
+		# fill parameters
 
 		type_c, nlags, lagsize, lineartol,htol, vtol, hband, vband, azimuth, dip, omni = [], [], [], [], [], [] , [] ,[] ,[] ,[], []
 		for i in range(ndirections):
@@ -1113,20 +1449,23 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 			vband.append(widgets_l[i][9].value)
 			omni.append(widgets_l[i][10].value)
 
+		# Calculate experimental variograms 
 
 		dfs = []
-
 		for i in range(ndirections):
 			wait_please.value += 1
 			dfs.append(_calculate_experimental_function(dataset, X, Y, Z, 
 						type_c[i], lagsize[i], lineartol[i], htol[i], vtol[i], hband[i], vband[i], azimuth[i], dip[i], 
 						nlags[i], head, tail, choice, omni[i]))
 
+		# Store experimental variograms 
+
 		global return_exp_var
 		returning = {'Directions': [azimuth, dip],
 					 'Values' : dfs}
 		return_exp_var = returning
 
+		# Plot variograms 
 	
 		size_row = 1 if len(dfs) < 4 else int(math.ceil(len(dfs)/4))
 		size_cols = 4 if len(dfs) >= 4 else int(len(dfs))
@@ -1161,53 +1500,65 @@ def interactive_experimental(dataset, X, Y, head, tail, ndirections, show_pairs 
 
 ##############################################################################################################################################
 
-def experimental(dataset, X, Y, head, tail,type_c,
- nlags, lagsize, lineartol,htol, vtol, hband, vband, azimuth, dip, omni, 
- show_pairs =False,  Z =None, choice =1.0):
+def experimental(dataset:callable, X:str, Y:str, head:str, tail:str,type_c:str,
+ nlags:list , lagsize:list, lineartol:list ,htol: list, vtol: list, hband: list, vband:list, azimuth:list, dip:list, omni:bool, 
+ show_pairs:bool =False,  Z:str =None, choice:float =1.0):
 	"""Calculates experimental variogram. Store the results in a global variable `gammapy.return_exp_var`.
 	
 	Args:
-		dataset (DataFrame): point set DataFrame
-		X (str): x coordinates column name
-		Y (str): y coordinates column name
-		head (str): head variable name
-		tail (str): tail variable name
-		type_c (lst of str): covariance funcrion type list. `Variogram`, `Correlogram` ...
-		nlags (lst): list of lag number for each direction
-		lagsize (lst): list of lag size for each direction
-		lineartol (lst): list of linear tolerance for each direction
-		htol (lst): list of horizontal tolerance for each direction
-		vtol (lst): liist of vertical tolerance for each direction
-		hband (lst): list of horizontal band for each direction
-		vband (lst): list of vertical band for each direction
-		azimuth (lst): azimuth
-		dip (lst): dip
-		omni (bool): omnidirectionl flag
-		show_pairs (bool, optional): show pairs flag. Defaults to False.
-		Z (str, optional): z coordinates column name. Defaults to None.
-		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
+	    dataset (DataFrame): point set DataFrame
+	    X (str): x coordinates column name
+	    Y (str): y coordinates column name
+	    head (str): head variable name
+	    tail (str): tail variable name
+	    type_c (lst of str): covariance funcrion type list. `Variogram`, `Correlogram` ...
+	    nlags (lst): list of lag number for each direction
+	    lagsize (lst): list of lag size for each direction
+	    lineartol (lst): list of linear tolerance for each direction
+	    htol (lst): list of horizontal tolerance for each direction
+	    vtol (lst): liist of vertical tolerance for each direction
+	    hband (lst): list of horizontal band for each direction
+	    vband (lst): list of vertical band for each direction
+	    azimuth (lst): azimuth
+	    dip (lst): dip
+	    omni (bool): omnidirectionl flag
+	    show_pairs (bool, optional): show pairs flag. Defaults to False.
+	    Z (str, optional): z coordinates column name. Defaults to None.
+	    choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
 	
 	Returns:
-		dict: experimental variogram DataFrame
+	    dict: experimental variogram DataFrame
 	"""
+
+
+	# Ignore numpy erros 
 
 	warnings.filterwarnings('ignore')
 
+	# define the number of directions in experimental variogram 
+
 	ndirections = len(nlags)
+
+	# Fill dataset with 0 z coordinates if 2D case 
 
 	if Z == None:
 		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
-		Z = 'Z'			
+		Z = 'Z'	
+
+	# Return the dictionary containing all information of experimental variograms 		
 
 	dfs = []
 	returning = {'Directions': [azimuth, dip],
 				 'Values' : dfs}
+
+	# Calculate experimental variograms for each directions 
 
 	for i in range(ndirections):
 		dfs.append(_calculate_experimental_function(dataset, X, Y, Z, 
 					type_c[i], lagsize[i], lineartol[i], htol[i], vtol[i], hband[i], vband[i], azimuth[i], dip[i], 
 					nlags[i], head, tail, choice, omni[i]))
 
+	# Plot experimental variograms 
 
 	size_row = 1 if len(dfs) < 4 else int(math.ceil(len(dfs)/4))
 	size_cols = 4 if len(dfs) >= 4 else int(len(dfs))
@@ -1217,7 +1568,6 @@ def experimental(dataset, X, Y, head, tail,type_c,
 
 	count_row = 1
 	count_cols = 1
-
 
 	for j, i in enumerate(dfs):
 
@@ -1243,5 +1593,40 @@ def experimental(dataset, X, Y, head, tail,type_c,
 ##############################################################################################################################################	
 	
 
+def hscatterplots (dataset: callable, X:str, Y:str, head:str, tail:str, lagsize: float, nlags: int, 
+					azimuth: float, dip: float, lineartol: float,htol: float, vtol: float, hband: float, vband: float , Z:str= None, choice: bool =False):
 
+	# If dataset 2D, fill Z values with zeros 
 
+	if Z == None:
+		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
+		Z = 'Z'
+
+	# Calculate all permissible distances
+
+	dist = _distances(dataset, nlags, X, Y, Z, lagsize, head, tail, choice)
+
+	# Define the angles and tolerances 
+
+	cos_Azimuth = np.cos(np.radians(90-azimuth))
+	sin_Azimuth = np.sin(np.radians(90-azimuth))
+	cos_Dip     = np.cos(np.radians(90-dip))
+	sin_Dip     = np.sin(np.radians(90-dip))
+	htol = np.abs(np.cos(np.radians(htol)))
+	vtol= np.abs(np.cos(np.radians(vtol)))
+	check_azimuth = np.abs((dist[:,0]*cos_Azimuth + dist[:,1]*sin_Azimuth)/dist[:,3])
+	check_dip     = np.abs((dist[:,3]*sin_Dip + dist[:,2]*cos_Dip)/dist[:,4])
+	check_bandh   = np.abs(cos_Azimuth*dist[:,1]- sin_Azimuth*dist[:,0])
+	check_bandv	  = np.abs(sin_Dip*dist[:,2] - cos_Dip*dist[:,3])
+	
+	store = []
+	lagmultiply = []
+	for i in range(1,(nlags+1)):
+		lagmultiply.append(i)
+		points = __permissible_pairs (i, lagsize, lineartol, check_azimuth,
+						check_dip, check_bandh, check_bandv, htol, vtol, hband, vband, False,
+						dist)
+		average_tail = (points[:,7] +  points[:,8])/2
+		average_head = (points[:,5] +  points[:,6])/2
+		store.append([average_head, average_tail])
+	plots.plot_hscat(store, lagsize, lagmultiply)
