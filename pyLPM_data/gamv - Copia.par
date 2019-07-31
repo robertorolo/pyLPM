@@ -1,0 +1,32 @@
+  				  Parameters for GAMV
+                  *******************
+
+START OF PARAMETERS:
+D:/Drive/pyLPM/pyLPM_data/tmp 			              -file with data
+1   2   0                         -   columns for X, Y, Z coordinates
+2   3   4                        -   number of variables,col numbers
+-999     999                -   trimming limits
+D:/Drive/pyLPM/pyLPM_data/output.out                          -file for variogram output
+10                              -number of lags
+10                              -lag separation distance
+5                              -lag tolerance
+3                                 -number of directions
+0 22 5 0 22 5 -azm,atol,bandh,dip,dtol,bandv 
+0 22 5 0 22 5 -azm,atol,bandh,dip,dtol,bandv 
+0 22 5 0 22 5 -azm,atol,bandh,dip,dtol,bandv
+0                                 -standardize sills? (0=no, 1=yes)
+1                                 -number of variograms
+1   2   1                         -tail var., head var., variogram type
+
+
+
+type 1 = traditional semivariogram
+     2 = traditional cross semivariogram
+     3 = covariance
+     4 = correlogram
+     5 = general relative semivariogram
+     6 = pairwise relative semivariogram
+     7 = semivariogram of logarithms
+     8 = semimadogram
+     9 = indicator semivariogram - continuous
+     10= indicator semivariogram - categorical

@@ -10,7 +10,14 @@ Cell declustering
 
 .. autofunction:: declus
 
+Variogram
+--------------
+
+.. autofunction:: gamv
+
 Kriging
 -------------------
 
 .. autofunction:: kt3d
+
+
