@@ -262,9 +262,6 @@ def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oc
         option (str, optional): cross validation 'cross', jackknife 'jackknife' or estimation 'grid' flag . Defaults to 'grid'.
         debug_level (int, optional): debug level. Defaults to 0. If 2 plots the negative weights histogram.
         usewine (bool, optional): use wine flag. Defaults to False.
-
-	Returns:
-		arrays: estimated, variance
     """
 
     write_GeoEAS(df=df,dh=dh,x=x,y=y,z=z,vars=[var])
@@ -421,26 +418,10 @@ def gamv(df,  x='x', y='y', z='z', var_h ='V', var_tail = 'V',  nlags:int =10, l
 	    dtol (list, optional): List of vertical angular tolerances in degrees
 	    bandv (list, optional): List of vertical band width 
 	    standardize (int, optional): Standardize variables 0- No, 1- Yes 
-	    variogram_type (int, optional): Variogram experimental function 
-
-		 variogram_type 
-		 1 = traditional semivariogram
-     2 = traditional cross semivariogram
-     3 = covariance
-     4 = correlogram
-     5 = general relative semivariogram
-     6 = pairwise relative semivariogram
-     7 = semivariogram of logarithms
-     8 = semimadogram
-     9 = indicator semivariogram - continuous
-     10= indicator semivariogram - categorical
-
+	    variogram_type (int, optional): Variogram experimental function. 1 = traditional semivariogram, 2 = traditional cross semivariogram, 3 = covariance,  4 = correlogram, 5 = general relative semivariogram,   6 = pairwise relative semivariogram, 7 = semivariogram of logarithms, 8 = semimadogram, 9 = indicator semivariogram - continuous, 10= indicator semivariogram - categorical
 	    tmin (TYPE, optional): Minimum trimming limits 
 	    tmax (int, optional): Maximum trimming limits 
 	    usewine (bool, optional): Option to use wine for Linux users
-	
-	Returns:
-	    TYPE: Description
 	"""
 
 	# Write gslib file on directory 

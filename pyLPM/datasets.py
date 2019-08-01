@@ -17,15 +17,33 @@ global DATA_PATH
 DATA_PATH = pkg_resources.resource_filename('pyLPM', 'datasets/')
 
 def dataset_list():
+	"""Returns a list with avaliable datsets.
+	
+	Returns:
+		lest: avaliable datsets list
+	"""
 	return ['Walker_Lake']
 
 def dataset(dataset_name):
+	"""Return dataset as a pandas DataFrame
+	
+	Args:
+		dataset_name (str): dataset name
+	
+	Returns:
+		DataFrame: dataset as a DataFrame
+	"""
 	if dataset_name == 'Walker_Lake':
 		X, Y, Cu, Au = np.loadtxt(DATA_PATH+"Walker_Lake.txt" , skiprows = 6, unpack = True)
 		df = pd.DataFrame(np.array([X,Y,Cu,Au]).T, columns =['X', 'Y', 'Cu', 'Au'])
 		return df
 
 def _description_html(dataset_name):
+	"""Get a wikipedia description of the dataset
+	
+	Args:
+		dataset_name (str): dataset name
+	"""
 	if dataset_name == "Walker_Lake":
 		h1 = widgets.HTML('<h1> Walker Lake (Nevada) </h1>'\
 		    '<p><cite> Walker Lake is a natural lake, in the Great Basin in western Nevada in the United States." \
@@ -64,7 +82,12 @@ def _description_html(dataset_name):
 		display(h1,h2)
 
 
-def descriptions(dataset_name): 
+def descriptions(dataset_name):
+	"""Show dataset info
+	
+	Args:
+		dataset_name (str): show dataset info
+	"""
 	descriptions = {}
 	descriptions['Walker_Lake'] = {'name': 'Walker_Lake',
 								  'local': 'CAN'}
