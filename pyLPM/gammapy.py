@@ -934,15 +934,6 @@ def _covariogram_map_3d(property_value, dataset, x_label, y_label, z_label, neig
 	    cuty (list, optional): list containing the minimum cutsize and the maximum cutsize for y coordinates
 	    cutz (list, optional): list containing the minimum cutsize and the maximum cutsize for z coordinates
 	    size (int, optional): Description
-	
-	Deleted Parameters:
-	    property_value(string): String containing the property to create the covariogram map
-	    division(int: discretize number of covariogram map
-	    optional), alpha(float: the level of transparency (0- transparent, 1-solid)
-	    size(int: size of bullet
-	
-	No Longer Returned:
-	    plot (matplotlib.pyplot): Plot of Covariance map in three dimensional scale 
 	'''
 
 
@@ -1372,9 +1363,9 @@ def interactive_experimental(dataset:callable, X:str, Y:str, head:str, tail:str,
 	    show_pairs (bool, optional): show number of pairs flag. Defaults to False.
 	    Z (str, optional): z coordinates column name. Defaults to None.
 	    choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.
-	
+
 	Returns:
-	    TYPE: Description
+	    dict: experimental variogram DataFrame
 	"""
 
 	warnings.filterwarnings('ignore') # Ignore numpy erros

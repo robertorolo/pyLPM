@@ -20,7 +20,7 @@ def dataset_list():
 	"""Returns a list with avaliable datsets.
 	
 	Returns:
-		lest: avaliable datsets list
+		lst: avaliable datsets list
 	"""
 	return ['Walker_Lake']
 

@@ -65,10 +65,14 @@ def plot_experimental_variogram(dfs, azm,dip):
 
 #############################################################################################################
 
-def plot_hscat(store, lagsize, lagmultiply):
-    size_row = 1 if len(lagmultiply) < 4 else int(math.ceil(len(lagmultiply)/4))
-    size_cols = 4 if len(lagmultiply) >= 4 else int(len(lagmultiply))
-
+def hscatter(store, lagsize, lagmultiply):
+    """Plots h scatterplot
+    
+    Args:
+        store ([type]): [description]
+        lagsize (float): lag size
+        lagmultiply (int): how many lags to plot
+    """
     distance =[i*lagsize for i in lagmultiply]
 
    
