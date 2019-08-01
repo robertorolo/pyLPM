@@ -1,12 +1,3 @@
-"""Summary
-
-Attributes:
-    return_exp_var (list): Description
-    return_model_var (dict): Description
-"""
-# IMPORT PACKAGES # 
-
-
 from __future__ import print_function
 from ipywidgets import interact, interactive, fixed, interact_manual
 from ipywidgets import GridspecLayout
