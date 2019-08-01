@@ -2,7 +2,7 @@ sphinx>=1.4
 ipykernel
 nbsphinx
 sphinx_rtd_theme==0.4.2
-plotly
+plotly==4.0.0
 ipywidgets
 sklearn
 numba
