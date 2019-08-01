@@ -1,7 +1,7 @@
 Installation
 ==============
 
-The first step for installing pyLPM in your machine is to install anaconda. 
+The first step for installing pyLPM in your machine is to install anaconda.
 
 .. image:: figs/anacondalogo.png
     :width: 350px
@@ -28,6 +28,8 @@ After downloading Source code in `tar.gz` format:
 .. code:: python
 
 	pip install pyLPM-1.1.0.tar.gz
+
+The same approach works under linux too.
 
 Now you can open a jupyter notebook and import pyLPM.
 
