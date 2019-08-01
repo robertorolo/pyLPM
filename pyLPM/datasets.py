@@ -18,12 +18,9 @@ DATA_PATH = pkg_resources.resource_filename('pyLPM', 'datasets/')
 
 def dataset_list():
 	
-	"""Returns a list with avaliable datsets.
-	
-	Returns:
-		lst: avaliable datsets list
+	"""Prints all avaliables datasets as a list
 	"""
-	return ['Walker_Lake']
+	print(['Walker_Lake'])
 
 def dataset(dataset_name):
 	"""Return dataset as a pandas DataFrame
