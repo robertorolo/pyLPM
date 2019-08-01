@@ -1,9 +1,3 @@
-"""Summary
-
-Attributes:
-    DATA_PATH (TYPE): Description
-    temp_dir_str (TYPE): Description
-"""
 from __future__ import print_function
 from ipywidgets import interact, interactive, fixed, interact_manual
 from ipywidgets import GridspecLayout
@@ -20,9 +14,6 @@ import matplotlib.pyplot as plt
 from matplotlib import colors,ticker,cm 
 import matplotlib
 
-
-
-
 import subprocess
 import numpy as np
 import pandas as pd
@@ -31,9 +22,6 @@ import pkg_resources
 import os
 import re
 import math
-
-
-
 
 #############################################################################################################
 
@@ -274,13 +262,16 @@ def kt3d(df, dh, x, y, z, var, grid, variogram, min_samples, max_samples, max_oc
         option (str, optional): cross validation 'cross', jackknife 'jackknife' or estimation 'grid' flag . Defaults to 'grid'.
         debug_level (int, optional): debug level. Defaults to 0. If 2 plots the negative weights histogram.
         usewine (bool, optional): use wine flag. Defaults to False.
+
+	Returns:
+		arrays: estimated, variance
     """
 
-		write_GeoEAS(df=df,dh=dh,x=x,y=y,z=z,vars=[var])
+    write_GeoEAS(df=df,dh=dh,x=x,y=y,z=z,vars=[var])
 
 
 
-		kt3dpar = '''
+    kt3dpar = '''
 											Parameters for KT3D
 									*******************
 
@@ -309,7 +300,7 @@ extdrift.dat                     -gridded file with drift/mean
 4                                -  column number in gridded file
 {varg}'''
 
-		map_dict = {
+    map_dict = {
 				'datafile':temp_dir_str+'tmp.dat',
 				'dh': col_number(temp_dir_str+'tmp.dat', dh),
 				'x': col_number(temp_dir_str+'tmp.dat', x),
@@ -348,14 +339,14 @@ extdrift.dat                     -gridded file with drift/mean
 				'varg':write_varg_str(variogram)
 		}
 
-		formatted_str = kt3dpar.format(**map_dict)
-		parfile = temp_dir_str+'partmp.par'
-		f = open(parfile, 'w')
-		f.write(formatted_str)
-		f.close()
-		program = DATA_PATH+"kt3d.exe"
+    formatted_str = kt3dpar.format(**map_dict)
+    parfile = temp_dir_str+'partmp.par'
+    f = open(parfile, 'w')
+    f.write(formatted_str)
+    f.close()
+    program = DATA_PATH+"kt3d.exe"
 
-		call_program(program, parfile, usewine)
+    call_program(program, parfile, usewine)
 
     if debug_level == 2:
     
@@ -389,14 +380,17 @@ extdrift.dat                     -gridded file with drift/mean
 
     if option is 'grid':
 
-				df1 = read_GeoEAS(temp_dir_str+'output.out')
-				return df1['Estimate'], df1['EstimationVariance']
+        df1 = read_GeoEAS(temp_dir_str+'output.out')
+        df1.replace(-999,float('nan'),inplace=True)
+        return df1['Estimate'], df1['EstimationVariance']
 
-		if option is 'cross' or option is 'jackknife':
+    if option is 'cross' or option is 'jackknife':
 
-				df1 = read_GeoEAS(temp_dir_str+'output.out')
-				real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
-				plots.xval(real, estimate, error, pointsize=8, figsize=(500,900))
+        df1 = read_GeoEAS(temp_dir_str+'output.out')
+        df1.replace(-999,float('nan'),inplace=True)
+        real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
+        mask = np.isfinite(estimate)
+        plots.xval(real[mask], estimate[mask], error[mask], pointsize=8, figsize=(500,900))
 
 
 ##########################################################################################################################################################3
