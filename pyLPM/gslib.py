@@ -113,7 +113,11 @@ def read_GeoEAS(file):
 
 		f.close()
 
-		return pd.DataFrame(results, columns = col_names).replace(-999,float('nan'),inplace=True)
+		df = pd.DataFrame(results, columns = col_names)
+		df.replace(-999, np.nan, inplace=True)
+
+		return df
+		#return pd.DataFrame(results, columns = col_names)
 
 def col_number(file, col):
 		"""Returns the column number from ist name on a GeoEAS file
