@@ -1077,9 +1077,9 @@ def interactive_modelling(experimental_dataframe: callable, number_of_structures
 	    experimental_dataframe (DataFrame): Experimental variogram DataFrame. Assessed by `gammapy.return_exp_var`
 	    number_of_structures (int): number of structures
 	    show_pairs (bool, optional): show number of pairs flag. Defaults to False.
-	
-	Deleted Parameters:
-	    directions (lst of lsts): directions to model variogram. Example [[166.,76],[0.,0.]] for modeling in direction azimuth = 166, dip = 0 and azimuth = 76 and dip = 0.
+
+	Returns:
+	    dict: Variogram model 
 	"""
 
 	warnings.filterwarnings('ignore')
