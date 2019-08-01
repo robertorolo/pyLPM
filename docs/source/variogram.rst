@@ -8,12 +8,23 @@ This module houses tools for spatial continuity analysis and variogram calculati
 Variogram map
 ---------------
 
+This program will do a map of spatial continuity. It is not required to do in a estimation, but can save time when you have to know the directions of anisotropy.
+More cold the direction is in the map less variance it have.
+
 .. autofunction:: varmap
 
 .. autofunction:: interactive_varmap
 
 Experimental variogram
 -------------------------
+
+It is calcullated using the equation:
+ȣ=1/2*mean((x(u)-x(u+h))^2)
+where:
+ȣ is the spatial variance
+x(u) is the value of the variable at u position
+x(u+h) is the value of the variable whith h of distance
+This equation returns the mean of the variance 
 
 .. autofunction:: experimental
 
