@@ -113,7 +113,7 @@ def read_GeoEAS(file):
 
 		f.close()
 
-		return pd.DataFrame(results, columns = col_names)
+		return pd.DataFrame(results, columns = col_names).replace(-999,float('nan'),inplace=True)
 
 def col_number(file, col):
 		"""Returns the column number from ist name on a GeoEAS file
@@ -378,13 +378,11 @@ extdrift.dat                     -gridded file with drift/mean
     if option is 'grid':
 
         df1 = read_GeoEAS(temp_dir_str+'output.out')
-        df1.replace(-999,float('nan'),inplace=True)
         return df1['Estimate'], df1['EstimationVariance']
 
     if option is 'cross' or option is 'jackknife':
 
         df1 = read_GeoEAS(temp_dir_str+'output.out')
-        df1.replace(-999,float('nan'),inplace=True)
         real, estimate, error = df1['True'], df1['Estimate'], df1['Error: est-true']
         mask = np.isfinite(estimate)
         plots.xval(real[mask], estimate[mask], error[mask], pointsize=8, figsize=(500,900))
