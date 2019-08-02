@@ -46,7 +46,7 @@ return_model_var = {}
 
 # Calculate the distance coordinates 
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _hdist(distancex, distancey, distancez):
 	
 	"""euclidian distance between samples 
@@ -68,7 +68,7 @@ def _hdist(distancex, distancey, distancez):
 
 # Calculate the distances in planar coordinates
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _xydist(distancex, distancey):
 	
 	"""Planar distances between samples 
@@ -89,7 +89,7 @@ def _xydist(distancex, distancey):
 
 # Calculate the x coordinates distances
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _xdist(pairs):
 	"""Summary
 	
@@ -109,7 +109,7 @@ def _xdist(pairs):
 
 # Calculate the y coordinates distances
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _ydist(pairs):
 	"""Summary
 	
@@ -128,7 +128,7 @@ def _ydist(pairs):
 
 # Calculate the z coordinates distances
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _zdist(pairs):
 	"""Summary
 	
@@ -147,7 +147,7 @@ def _zdist(pairs):
 
 # Calculate pairs combination where vertical and horizontal distances are less than the maximum distance
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _combin(points,n, max_dist):
 	"""Summary
 	
@@ -174,7 +174,7 @@ def _combin(points,n, max_dist):
 
 # Rotate data according azimuth and dip directions 
 
-@numba.jit(fastmath=True)
+@numba.jit(fastmath=False)
 def _rotate_data(xh, yh, zh, azimute, dip):
 	"""Summary
 	
@@ -234,7 +234,6 @@ def _distances(dataset, nlags, x_label, y_label, z_label,
 	'''
 
 	# Variables definition 
-
 	max_dist = (nlags + 1)*lagdistance # Define the maximum distance search 
 	X = dataset[x_label].values 
 	Y = dataset[y_label].values
@@ -542,6 +541,7 @@ def _calculate_experimental_function(dataset, x_label, y_label, z_label,
 	df = pd.DataFrame(value_exp, 
 					  columns = ['Spatial continuity', 'Number of pairs', 'Average distance'])
 	df = df.dropna()
+
 	return df
 
 ##############################################################################################################################################
@@ -1575,10 +1575,31 @@ def experimental(dataset:callable, X:str, Y:str, head:str, tail:str,type_c:str,
 ##############################################################################################################################################	
 	
 
-def hscatterplots (dataset: callable, X:str, Y:str, head:str, tail:str, lagsize: float, nlags: int, 
-					azimuth: float, dip: float, lineartol: float,htol: float, vtol: float, hband: float, vband: float , Z:str= None, choice: bool =False):
+def hscatterplots (dataset, X:str, Y:str, head:str, tail:str, lagsize: float, nlags: int, 
+					azimuth: float, dip: float, lineartol: float,htol: float, vtol: float, hband: float, vband: float , Z:str= None, choice:float=1.0, figsize=(700,700)):
+	"""Plots H-scatterplot for n lags
+	
+	Args:
+		dataset (pd.DataFrame): Pandas DataFrame
+		X (str): x coordinates column name
+		Y (str): y coordinates column name
+		head (str): head variable name
+		tail (str): tail variable name
+		lagsize (float): lag size
+		nlags (int): number of lags
+		azimuth (float): azimuth 
+		dip (float): dip
+		lineartol (float): linear tolerance
+		htol (float): angular horizontal tolerance in degrees
+		vtol (float): angular vertical tolerance in degrees
+		hband (float): horinztal bandwidth
+		vband (float): vertical bandwidth
+		Z (str, optional): z coordinates column name. Defaults to None.
+		choice (float, optional): pool a random number of data to calculate the variogram. Defaults to 1.0.	"""
 
 	# If dataset 2D, fill Z values with zeros 
+
+	warnings.filterwarnings('ignore')
 
 	if Z == None:
 		dataset['Z'] = np.zeros(dataset[X].values.shape[0])
@@ -1611,4 +1632,5 @@ def hscatterplots (dataset: callable, X:str, Y:str, head:str, tail:str, lagsize:
 		average_tail = (points[:,7] +  points[:,8])/2
 		average_head = (points[:,5] +  points[:,6])/2
 		store.append([average_head, average_tail])
-	plots.plot_hscat(store, lagsize, lagmultiply)
+
+	plots.plot_hscat(store, lagsize, lagmultiply, figsize)

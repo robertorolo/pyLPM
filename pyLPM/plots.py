@@ -65,7 +65,7 @@ def plot_experimental_variogram(dfs, azm,dip):
 
 #############################################################################################################
 
-def hscatter(store, lagsize, lagmultiply):
+def plot_hscat(store, lagsize, lagmultiply, figsize):
     """Plots h scatterplot
     
     Args:
@@ -107,6 +107,8 @@ def hscatter(store, lagsize, lagmultiply):
         'xaxis':{'title':'Z(x)','zeroline':True,'autorange':True},
         'yaxis':{'title':'Z(x+h)','zeroline':True,'autorange':True},
         'annotations':[{'text':statitics,'showarrow':False,'x':0.98,'y':0.98,'xref':'paper','yref':'paper','align':'left','yanchor':'top','bgcolor':'white','bordercolor':'black'}],
+        'width':figsize[0],
+        'height':figsize[1],
         }
        
     fig['layout'].update(annotations =annotations)

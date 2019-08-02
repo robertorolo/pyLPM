@@ -15,11 +15,6 @@ Scatterplot
 
 .. autofunction:: scatter2d
 
-H-Scatterplot
------------------------
-
-.. autofunction:: hscatter
-
 QQ plot
 ---------
 

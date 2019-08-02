@@ -5,6 +5,11 @@ This module houses tools for spatial continuity analysis and variogram calculati
 
 .. currentmodule:: pyLPM.gammapy
 
+H-scatterplot
+----------------
+
+.. autofunction:: hscatterplots
+
 Variogram map
 ---------------
 
