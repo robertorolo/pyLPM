@@ -27,7 +27,7 @@ After downloading Source code in `tar.gz` format:
 
 .. code:: python
 
-	pip install pyLPM-1.1.0.tar.gz
+	pip install pyLPM-x.x.x.tar.gz
 
 The same approach works under linux too.
 
