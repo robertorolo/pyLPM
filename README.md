@@ -12,3 +12,8 @@ The software is composed by five modules:
 
 A complete documentation with usage examples can be found at [Read the docs](https://pylpm.readthedocs.io/en/latest/index.html)
 
+# References
+
+[PYLPM – UMA BIBLIOTECA GEOESTATÍSTICA DE CÓDIGO ABERTO EM PYTHON - 10º CBMINA
+](https://ibram.org.br/10-cbmina-trabalhos-tecnicos-desenvolvidos/?txtSearch=pylpm&radio-search-by=title#publication)
+
