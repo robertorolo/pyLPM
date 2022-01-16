@@ -702,7 +702,7 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
     if z is None:
         z = np.zeros(len(x))
     x, y, z = np.array(x)[mask_pt], np.array(y)[mask_pt], np.array(z)[mask_pt]
-    point_var, grid_var = np.array(point_var)[mask_pt], np.array(grid_var)[mask_grid]
+    point_var, grid_var = np.array(point_var)[mask_pt], np.array(grid_var)
 
     points_df = pd.DataFrame(columns=['x','y','z','var'])
     points_df['x'], points_df['y'], points_df['z'], points_df['var'] = x, y, z, point_var
@@ -710,6 +710,8 @@ def swath_plots(x,y,z,point_var,grid,grid_var,n_bins=10):
     grid_df = pd.DataFrame(columns=['x','y','z'], data=utils.add_coord(grid))
     #grid_df.sort_values(by=['z','y','x'], inplace=True)
     grid_df['var'] = grid_var
+    
+    girf_df = grid_df.dropna()
 
     x_linspace, y_linspace, z_linspace = np.linspace(min(grid_df['x']), max(grid_df['x']), n_bins), np.linspace(min(grid_df['y']), max(grid_df['y']), n_bins), np.linspace(min(grid_df['z']), max(grid_df['z']), n_bins)
 
