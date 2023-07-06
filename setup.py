@@ -13,7 +13,7 @@ setup(
   keywords = ['geostatistics', 'kriging', 'variogram'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'numpy',
-          'scipy==1.3.0',
+          'scipy==1.10.0',
           'numba',
           'plotly==4.0.0',
           'pandas',
